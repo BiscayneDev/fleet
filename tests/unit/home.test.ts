@@ -1,0 +1,66 @@
+import { describe, expect, it } from 'vitest';
+
+import { deriveHomeBriefing } from '../../src/lib/fleet/home';
+import type { Project } from '../../src/lib/fleet/types';
+
+function makeProject(overrides: Partial<Project>): Project {
+  const now = '2026-04-11T15:00:00.000Z';
+
+  return {
+    slug: 'project',
+    title: 'Project',
+    status: 'draft',
+    summary: 'Summary',
+    goals: [],
+    desiredOutcomes: [],
+    constraints: [],
+    nextActions: [],
+    participants: [],
+    sourceIds: [],
+    artifactIds: [],
+    sessionIds: [],
+    emailThreadIds: [],
+    calendarEventIds: [],
+    createdAt: now,
+    updatedAt: now,
+    ...overrides,
+  };
+}
+
+describe('deriveHomeBriefing', () => {
+  it('prioritizes active projects ahead of other statuses on Home', () => {
+    const briefing = deriveHomeBriefing([
+      makeProject({
+        slug: 'paused-project',
+        title: 'Paused project',
+        status: 'paused',
+        updatedAt: '2026-04-11T10:00:00.000Z',
+      }),
+      makeProject({
+        slug: 'active-project',
+        title: 'Active project',
+        status: 'active',
+        updatedAt: '2026-04-11T09:00:00.000Z',
+      }),
+      makeProject({
+        slug: 'draft-project',
+        title: 'Draft project',
+        status: 'draft',
+        updatedAt: '2026-04-11T12:00:00.000Z',
+      }),
+      makeProject({
+        slug: 'newer-active-project',
+        title: 'Newer active project',
+        status: 'active',
+        updatedAt: '2026-04-11T11:00:00.000Z',
+      }),
+    ]);
+
+    expect(briefing.activeProjects.map((project) => project.slug)).toEqual([
+      'newer-active-project',
+      'active-project',
+      'draft-project',
+    ]);
+    expect(briefing.attentionItems[0]?.title).toContain('Paused project');
+  });
+});
