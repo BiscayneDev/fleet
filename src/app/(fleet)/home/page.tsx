@@ -1,9 +1,10 @@
-export default function FleetHomePage() {
-  return (
-    <section className="fleet-panel">
-      <p className="fleet-eyebrow">Home</p>
-      <h1>Fleet shell ready</h1>
-      <p>The three-pane workspace is scaffolded and ready for the next implementation tasks.</p>
-    </section>
-  );
+import { HomeBriefing } from '@/components/home/home-briefing';
+import { deriveHomeBriefing } from '@/lib/fleet/home';
+import { listProjects } from '@/lib/fs/project-store';
+
+export default async function FleetHomePage() {
+  const projects = await listProjects();
+  const briefing = deriveHomeBriefing(projects);
+
+  return <HomeBriefing briefing={briefing} />;
 }
