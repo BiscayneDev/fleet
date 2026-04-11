@@ -32,6 +32,15 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
+    if (error instanceof SyntaxError) {
+      return NextResponse.json(
+        {
+          error: 'Malformed JSON body',
+        },
+        { status: 400 },
+      );
+    }
+
     if (error instanceof ZodError) {
       return NextResponse.json(
         {

@@ -3,6 +3,12 @@ import type { WikiPageType } from '@/lib/fleet/types';
 
 import { createMockLlmWikiClient } from './mock';
 
+export const DEFAULT_LLM_WIKI_ADAPTER = 'mock';
+
+function resolveLlmWikiAdapter(): string {
+  return process.env.LLM_WIKI_ADAPTER ?? DEFAULT_LLM_WIKI_ADAPTER;
+}
+
 export interface LlmWikiPage {
   id: string;
   type: WikiPageType;
@@ -49,5 +55,12 @@ export interface LlmWikiClient {
 }
 
 export function getLlmWikiClient(): LlmWikiClient {
-  return createMockLlmWikiClient();
+  const adapter = resolveLlmWikiAdapter();
+
+  switch (adapter) {
+    case 'mock':
+      return createMockLlmWikiClient();
+    default:
+      throw new Error(`Unsupported llm-wiki adapter: ${adapter}`);
+  }
 }

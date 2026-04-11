@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const createInboxItem = vi.fn();
 const getLlmWikiClient = vi.fn();
+const init = vi.fn();
 const ingest = vi.fn();
 
 vi.mock('@/lib/fs/inbox-store', () => ({
@@ -18,17 +19,19 @@ let POST: typeof import('../../src/app/api/ingest/link/route').POST;
 beforeEach(async () => {
   ({ ingestLink, POST } = await import('../../src/app/api/ingest/link/route'));
   getLlmWikiClient.mockReturnValue({
-    init: vi.fn().mockResolvedValue({ status: 'ready' }),
+    init,
     ingest,
     query: vi.fn(),
     compound: vi.fn(),
     lint: vi.fn(),
   });
+  init.mockResolvedValue({ status: 'ready' });
 });
 
 afterEach(() => {
   createInboxItem.mockReset();
   getLlmWikiClient.mockReset();
+  init.mockReset();
   ingest.mockReset();
 });
 
@@ -61,6 +64,7 @@ describe('link ingest API route', () => {
     const result = await ingestLink({ url: 'https://example.com/post' });
 
     expect(createInboxItem).toHaveBeenCalledWith({ content: 'https://example.com/post' });
+    expect(init.mock.invocationCallOrder[0]).toBeLessThan(ingest.mock.invocationCallOrder[0]);
     expect(ingest).toHaveBeenCalledWith({
       source: expect.objectContaining({
         id: 'source-1',
@@ -84,6 +88,24 @@ describe('link ingest API route', () => {
         ],
       },
     });
+  });
+
+  it('returns 400 from POST when the request body is malformed JSON', async () => {
+    const response = await POST(
+      new Request('http://localhost/api/ingest/link', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: '{"url":',
+      }),
+    );
+
+    await expect(response.json()).resolves.toMatchObject({
+      error: 'Malformed JSON body',
+    });
+    expect(response.status).toBe(400);
+    expect(createInboxItem).not.toHaveBeenCalled();
+    expect(init).not.toHaveBeenCalled();
+    expect(ingest).not.toHaveBeenCalled();
   });
 
   it('returns 201 from POST with the ingest result', async () => {
