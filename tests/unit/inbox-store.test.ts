@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -49,5 +49,18 @@ describe('inbox store', () => {
       ingestionStatus: 'pending',
     });
     expect(listedItems).toEqual([item]);
+  });
+
+  it('skips malformed inbox files when listing items', async () => {
+    const dataRoot = await makeTempDataRoot();
+    process.env.FLEET_DATA_ROOT = dataRoot;
+
+    const validItem = await createInboxItem({
+      content: 'A note worth keeping',
+    });
+
+    await writeFile(path.join(dataRoot, 'Inbox', 'broken.json'), '{not valid json', 'utf8');
+
+    await expect(listInboxItems()).resolves.toEqual([validItem]);
   });
 });

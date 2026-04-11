@@ -6,15 +6,32 @@ export function InboxList({ items }: { items: InboxItem[] }) {
   }
 
   return (
-    <ul className="fleet-inbox-list">
+    <ul style={{ display: 'grid', gap: '0.75rem', listStyle: 'none', margin: '1rem 0 0', padding: 0 }}>
       {items.map((item) => (
-        <li className="fleet-inbox-list-item" key={item.id}>
-          <div className="fleet-inbox-list-header">
+        <li
+          key={item.id}
+          style={{
+            background: 'var(--fleet-panel-muted)',
+            border: '1px solid var(--fleet-border)',
+            borderRadius: '0.75rem',
+            padding: '1rem',
+          }}
+        >
+          <div style={{ alignItems: 'center', display: 'flex', gap: '0.75rem', justifyContent: 'space-between' }}>
             <strong>{item.title}</strong>
             <span className="fleet-eyebrow">{item.type}</span>
           </div>
-          <p>{item.body}</p>
-          <div className="fleet-inbox-list-meta">
+          <p style={{ margin: '0.5rem 0', whiteSpace: 'pre-wrap' }}>{item.body}</p>
+          <div
+            style={{
+              alignItems: 'center',
+              color: 'var(--fleet-text-muted)',
+              display: 'flex',
+              fontSize: '0.875rem',
+              gap: '0.75rem',
+              justifyContent: 'space-between',
+            }}
+          >
             <span>{new Date(item.createdAt).toLocaleString()}</span>
             <span>{item.ingestionStatus}</span>
           </div>

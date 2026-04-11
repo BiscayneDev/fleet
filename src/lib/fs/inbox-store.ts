@@ -84,10 +84,16 @@ export async function listInboxItems(): Promise<InboxItem[]> {
     entries
       .filter((entry) => entry.isFile() && entry.name.endsWith('.json'))
       .map(async (entry) => {
-        const content = await readFile(path.join(inboxDirectory, entry.name), 'utf8');
-        return parseInboxItem(JSON.parse(content) as unknown);
+        try {
+          const content = await readFile(path.join(inboxDirectory, entry.name), 'utf8');
+          return parseInboxItem(JSON.parse(content) as unknown);
+        } catch {
+          return null;
+        }
       }),
   );
 
-  return items.sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+  return items
+    .filter((item): item is InboxItem => item !== null)
+    .sort((left, right) => right.createdAt.localeCompare(left.createdAt));
 }
