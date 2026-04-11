@@ -116,7 +116,7 @@ export function HomeBriefing({ briefing }: { briefing: HomeBriefing }) {
           {briefing.agentActivity.length > 0 ? (
             <ul style={{ display: 'grid', gap: '0.75rem', listStyle: 'none', margin: 0, padding: 0 }}>
               {briefing.agentActivity.map((item) => (
-                <li key={`${item.projectTitle}-${item.detail}`} style={{ display: 'grid', gap: '0.2rem' }}>
+                <li key={item.slug} style={{ display: 'grid', gap: '0.2rem' }}>
                   <strong>{item.projectTitle}</strong>
                   <span style={{ color: 'var(--fleet-text-muted)' }}>{item.detail}</span>
                 </li>
@@ -135,7 +135,7 @@ export function HomeBriefing({ briefing }: { briefing: HomeBriefing }) {
           {briefing.recentKnowledge.length > 0 ? (
             <ul style={{ display: 'grid', gap: '0.75rem', listStyle: 'none', margin: 0, padding: 0 }}>
               {briefing.recentKnowledge.map((item) => (
-                <li key={`${item.projectTitle}-${item.detail}`} style={{ display: 'grid', gap: '0.2rem' }}>
+                <li key={item.slug} style={{ display: 'grid', gap: '0.2rem' }}>
                   <strong>{item.projectTitle}</strong>
                   <span style={{ color: 'var(--fleet-text-muted)' }}>{item.detail}</span>
                 </li>

@@ -62,4 +62,29 @@ describe('deriveHomeBriefing', () => {
     ]);
     expect(briefing.attentionItems[0]?.title).toContain('Paused project');
   });
+
+  it('includes stable project slugs for agent activity and recent knowledge items', () => {
+    const briefing = deriveHomeBriefing([
+      makeProject({
+        slug: 'alpha',
+        title: 'Shared title',
+        status: 'active',
+        summary: 'Same summary',
+        sessionIds: ['session-1'],
+        updatedAt: '2026-04-11T10:00:00.000Z',
+      }),
+      makeProject({
+        slug: 'beta',
+        title: 'Shared title',
+        status: 'draft',
+        summary: 'Same summary',
+        updatedAt: '2026-04-11T11:00:00.000Z',
+      }),
+    ]);
+
+    expect(briefing.agentActivity).toEqual([
+      expect.objectContaining({ slug: 'alpha', projectTitle: 'Shared title' }),
+    ]);
+    expect(briefing.recentKnowledge.map((item) => item.slug)).toEqual(['beta', 'alpha']);
+  });
 });

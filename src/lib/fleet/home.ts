@@ -7,11 +7,13 @@ export interface HomeAttentionItem {
 }
 
 export interface HomeKnowledgeItem {
+  slug: string;
   projectTitle: string;
   detail: string;
 }
 
 export interface HomeAgentActivityItem {
+  slug: string;
   projectTitle: string;
   detail: string;
 }
@@ -118,6 +120,7 @@ export function deriveHomeBriefing(projects: Project[]): HomeBriefing {
       .sort(compareByUpdatedAtDesc)
       .slice(0, 3)
       .map((project) => ({
+        slug: project.slug,
         projectTitle: project.title,
         detail: summarizeAgentActivity(project),
       })),
@@ -125,6 +128,7 @@ export function deriveHomeBriefing(projects: Project[]): HomeBriefing {
       .sort(compareByUpdatedAtDesc)
       .slice(0, 3)
       .map((project) => ({
+        slug: project.slug,
         projectTitle: project.title,
         detail: summarizeKnowledge(project),
       })),
