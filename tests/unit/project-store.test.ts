@@ -91,4 +91,48 @@ describe('project store', () => {
     expect(updatedProject.desiredOutcomes).toEqual(['Recommend a go/no-go decision']);
     expect(updatedProject.updatedAt >= updatedProject.createdAt).toBe(true);
   });
+
+  it('rejects duplicate project slugs instead of overwriting an existing project', async () => {
+    const dataRoot = await makeTempDataRoot();
+    process.env.FLEET_DATA_ROOT = dataRoot;
+
+    await createProject({
+      title: 'Alpha Launch Plan',
+      summary: 'Coordinate the alpha launch.',
+      goals: ['Align the team'],
+      desiredOutcomes: ['A launch-ready plan'],
+    });
+
+    await expect(
+      createProject({
+        title: 'Alpha   Launch Plan!!!',
+        summary: 'Attempt to overwrite the existing project.',
+        goals: ['Overwrite'],
+        desiredOutcomes: ['Should be rejected'],
+      }),
+    ).rejects.toThrow('Project with slug "alpha-launch-plan" already exists.');
+
+    const briefPath = path.join(dataRoot, 'Projects', 'alpha-launch-plan', 'brief.md');
+    const briefContent = await readFile(briefPath, 'utf8');
+    const { frontmatter } = parseMarkdownFile(briefContent);
+
+    expect(frontmatter.summary).toBe('Coordinate the alpha launch.');
+    expect(frontmatter.goals).toEqual(['Align the team']);
+  });
+
+  it('rejects titles that produce an empty slug', async () => {
+    const dataRoot = await makeTempDataRoot();
+    process.env.FLEET_DATA_ROOT = dataRoot;
+
+    await expect(
+      createProject({
+        title: '🚀🔥✨',
+        summary: 'A title with only emoji should be invalid.',
+        goals: ['Avoid invalid paths'],
+        desiredOutcomes: ['Reject before writing'],
+      }),
+    ).rejects.toThrow('Project title must produce a non-empty slug.');
+
+    await expect(stat(path.join(dataRoot, 'Projects', 'brief.md'))).rejects.toThrow();
+  });
 });

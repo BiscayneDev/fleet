@@ -1,4 +1,4 @@
-import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
+import { access, mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import * as path from 'node:path';
 import { z } from 'zod';
 
@@ -54,6 +54,15 @@ function getProjectDirectory(slug: string): string {
 
 function getProjectBriefPath(slug: string): string {
   return resolveDataPath(path.join(PROJECTS_DIRECTORY, slug, BRIEF_FILENAME));
+}
+
+async function projectExists(slug: string): Promise<boolean> {
+  try {
+    await access(getProjectBriefPath(slug));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function frontmatterToProject(slug: string, frontmatter: Record<string, unknown>): Project {
@@ -113,6 +122,14 @@ export async function createProject(input: CreateProjectInput): Promise<Project>
   const parsedInput = projectCreateSchema.parse(input);
   const now = new Date().toISOString();
   const slug = slugifyProjectTitle(parsedInput.title);
+
+  if (slug.length === 0) {
+    throw new Error('Project title must produce a non-empty slug.');
+  }
+
+  if (await projectExists(slug)) {
+    throw new Error(`Project with slug "${slug}" already exists.`);
+  }
 
   const project: Project = {
     slug,
