@@ -28,7 +28,7 @@ function makeProject(overrides: Partial<Project>): Project {
 }
 
 describe('deriveHomeBriefing', () => {
-  it('prioritizes active projects ahead of other statuses on Home', () => {
+  it('shows only active projects in the active projects section, ordered by freshness', () => {
     const briefing = deriveHomeBriefing([
       makeProject({
         slug: 'paused-project',
@@ -59,7 +59,6 @@ describe('deriveHomeBriefing', () => {
     expect(briefing.activeProjects.map((project) => project.slug)).toEqual([
       'newer-active-project',
       'active-project',
-      'draft-project',
     ]);
     expect(briefing.attentionItems[0]?.title).toContain('Paused project');
   });

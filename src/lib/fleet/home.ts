@@ -7,13 +7,11 @@ export interface HomeAttentionItem {
 }
 
 export interface HomeKnowledgeItem {
-  slug: string;
   projectTitle: string;
   detail: string;
 }
 
 export interface HomeAgentActivityItem {
-  slug: string;
   projectTitle: string;
   detail: string;
 }
@@ -114,13 +112,12 @@ export function deriveHomeBriefing(projects: Project[]): HomeBriefing {
       })
       .filter((item): item is HomeAttentionItem => item !== null)
       .slice(0, 3),
-    activeProjects: prioritizedProjects.slice(0, 3),
+    activeProjects: prioritizedProjects.filter((project) => project.status === 'active').slice(0, 3),
     agentActivity: prioritizedProjects
       .filter((project) => project.status === 'active' || project.sessionIds.length > 0 || project.artifactIds.length > 0)
       .sort(compareByUpdatedAtDesc)
       .slice(0, 3)
       .map((project) => ({
-        slug: project.slug,
         projectTitle: project.title,
         detail: summarizeAgentActivity(project),
       })),
@@ -128,7 +125,6 @@ export function deriveHomeBriefing(projects: Project[]): HomeBriefing {
       .sort(compareByUpdatedAtDesc)
       .slice(0, 3)
       .map((project) => ({
-        slug: project.slug,
         projectTitle: project.title,
         detail: summarizeKnowledge(project),
       })),

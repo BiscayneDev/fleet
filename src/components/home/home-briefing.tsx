@@ -88,7 +88,7 @@ export function HomeBriefing({ briefing }: { briefing: HomeBriefing }) {
         <HomeSection
           eyebrow="Projects"
           title="Active projects"
-          description="Prioritized so active work stays ahead of drafts, paused threads, and completed items."
+          description="The highest-priority active work, sorted by freshest project updates."
         >
           {briefing.activeProjects.length > 0 ? (
             <ul style={{ display: 'grid', gap: '0.75rem', listStyle: 'none', margin: 0, padding: 0 }}>
@@ -104,7 +104,7 @@ export function HomeBriefing({ briefing }: { briefing: HomeBriefing }) {
               ))}
             </ul>
           ) : (
-            <p style={{ margin: 0 }}>No projects yet. Create one to start building the briefing.</p>
+            <p style={{ margin: 0 }}>No active projects right now. Start or resume one to populate this section.</p>
           )}
         </HomeSection>
 
@@ -116,7 +116,7 @@ export function HomeBriefing({ briefing }: { briefing: HomeBriefing }) {
           {briefing.agentActivity.length > 0 ? (
             <ul style={{ display: 'grid', gap: '0.75rem', listStyle: 'none', margin: 0, padding: 0 }}>
               {briefing.agentActivity.map((item) => (
-                <li key={item.slug} style={{ display: 'grid', gap: '0.2rem' }}>
+                <li key={`${item.projectTitle}-${item.detail}`} style={{ display: 'grid', gap: '0.2rem' }}>
                   <strong>{item.projectTitle}</strong>
                   <span style={{ color: 'var(--fleet-text-muted)' }}>{item.detail}</span>
                 </li>
@@ -135,7 +135,7 @@ export function HomeBriefing({ briefing }: { briefing: HomeBriefing }) {
           {briefing.recentKnowledge.length > 0 ? (
             <ul style={{ display: 'grid', gap: '0.75rem', listStyle: 'none', margin: 0, padding: 0 }}>
               {briefing.recentKnowledge.map((item) => (
-                <li key={item.slug} style={{ display: 'grid', gap: '0.2rem' }}>
+                <li key={`${item.projectTitle}-${item.detail}`} style={{ display: 'grid', gap: '0.2rem' }}>
                   <strong>{item.projectTitle}</strong>
                   <span style={{ color: 'var(--fleet-text-muted)' }}>{item.detail}</span>
                 </li>
