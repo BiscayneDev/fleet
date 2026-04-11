@@ -26,6 +26,16 @@ export async function POST(request: Request): Promise<NextResponse> {
       );
     }
 
+    if (error instanceof Error) {
+      if (error.message.includes('already exists')) {
+        return NextResponse.json({ error: error.message }, { status: 409 });
+      }
+
+      if (error.message === 'Project title must produce a non-empty slug.') {
+        return NextResponse.json({ error: error.message }, { status: 400 });
+      }
+    }
+
     throw error;
   }
 }

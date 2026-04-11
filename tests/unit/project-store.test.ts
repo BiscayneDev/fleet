@@ -3,6 +3,7 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { POST } from '../../src/app/api/projects/route';
 import { parseMarkdownFile } from '../../src/lib/fs/frontmatter';
 import {
   createProject,
@@ -134,5 +135,58 @@ describe('project store', () => {
     ).rejects.toThrow('Project title must produce a non-empty slug.');
 
     await expect(stat(path.join(dataRoot, 'Projects', 'brief.md'))).rejects.toThrow();
+  });
+
+  it('returns 409 for duplicate normalized slug submissions', async () => {
+    const dataRoot = await makeTempDataRoot();
+    process.env.FLEET_DATA_ROOT = dataRoot;
+
+    await createProject({
+      title: 'Alpha Launch Plan',
+      summary: 'Coordinate the alpha launch.',
+      goals: ['Align the team'],
+      desiredOutcomes: ['A launch-ready plan'],
+    });
+
+    const response = await POST(
+      new Request('http://localhost/api/projects', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          title: 'Alpha   Launch Plan!!!',
+          summary: 'Attempt to overwrite the existing project.',
+          goals: ['Overwrite'],
+          desiredOutcomes: ['Should be rejected'],
+        }),
+      }),
+    );
+
+    expect(response.status).toBe(409);
+    await expect(response.json()).resolves.toEqual({
+      error: 'Project with slug "alpha-launch-plan" already exists.',
+    });
+  });
+
+  it('returns 400 when the title normalizes to an empty slug', async () => {
+    const dataRoot = await makeTempDataRoot();
+    process.env.FLEET_DATA_ROOT = dataRoot;
+
+    const response = await POST(
+      new Request('http://localhost/api/projects', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          title: '🚀🔥✨',
+          summary: 'A title with only emoji should be invalid.',
+          goals: ['Avoid invalid paths'],
+          desiredOutcomes: ['Reject before writing'],
+        }),
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: 'Project title must produce a non-empty slug.',
+    });
   });
 });
