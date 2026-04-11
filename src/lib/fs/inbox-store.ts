@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import * as path from 'node:path';
 import { z } from 'zod';
@@ -55,7 +56,7 @@ function parseInboxItem(payload: unknown): InboxItem {
 export async function createInboxItem(input: CreateInboxItemInput): Promise<InboxItem> {
   const { content } = inboxCaptureSchema.parse(input);
   const now = new Date().toISOString();
-  const id = crypto.randomUUID();
+  const id = randomUUID();
   const type = isLikelyUrl(content) ? 'link' : 'note';
   const item = parseInboxItem({
     id,

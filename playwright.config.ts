@@ -9,7 +9,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: `rm -f .next/dev/lock && npm run dev -- --hostname 127.0.0.1 --port ${port}`,
+    command: `node scripts/playwright-web-server.mjs ${port}`,
     port,
     reuseExistingServer: false,
     timeout: 120_000,

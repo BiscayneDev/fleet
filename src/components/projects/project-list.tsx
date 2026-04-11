@@ -7,7 +7,9 @@ export function ProjectList({ projects }: { projects: Project[] }) {
     return (
       <div className="fleet-panel">
         <h2>No projects yet</h2>
-        <p className="fleet-muted">Create a project brief to start filling out the Fleet workspace.</p>
+        <p style={{ color: 'var(--fleet-text-muted)' }}>
+          Create a project brief to start filling out the Fleet workspace.
+        </p>
       </div>
     );
   }

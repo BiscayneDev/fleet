@@ -9,7 +9,9 @@ export default async function ProjectsPage() {
       <header className="fleet-panel fleet-stack">
         <p className="fleet-eyebrow">Projects</p>
         <h1>Projects</h1>
-        <p className="fleet-muted">Browse project briefs and open a workspace for sources, wiki context, artifacts, and sessions.</p>
+        <p style={{ color: 'var(--fleet-text-muted)' }}>
+          Browse project briefs and open a workspace for sources, wiki context, artifacts, and sessions.
+        </p>
       </header>
 
       <ProjectList projects={projects} />

@@ -1,14 +1,8 @@
-import { notFound } from 'next/navigation';
-
-import { ProjectTabs } from '@/components/projects/project-tabs';
 import { WikiPageList, type WikiPageListItem } from '@/components/wiki/wiki-page-list';
-import { getProject } from '@/lib/fs/project-store';
 
-interface ProjectWikiPageProps {
-  params: Promise<{ slug: string }>;
-}
+import { getProjectOrNotFound, type ProjectRouteProps } from '../project-page';
 
-function buildWikiPages(project: Awaited<ReturnType<typeof getProject>>): WikiPageListItem[] {
+function buildWikiPages(project: Awaited<ReturnType<typeof getProjectOrNotFound>>): WikiPageListItem[] {
   return [
     ...project.participants.map((participant) => ({
       slug: `person-${participant}`,
@@ -25,33 +19,16 @@ function buildWikiPages(project: Awaited<ReturnType<typeof getProject>>): WikiPa
   ];
 }
 
-export default async function ProjectWikiPage({ params }: ProjectWikiPageProps) {
+export default async function ProjectWikiPage({ params }: ProjectRouteProps) {
   const { slug } = await params;
+  const project = await getProjectOrNotFound(slug);
+  const pages = buildWikiPages(project);
 
-  try {
-    const project = await getProject(slug);
-    const pages = buildWikiPages(project);
-
-    return (
-      <section className="fleet-stack">
-        <header className="fleet-panel fleet-stack">
-          <p className="fleet-eyebrow">Project knowledge</p>
-          <h1>Wiki</h1>
-          <p className="fleet-muted">Derived knowledge surfaces for {project.title}.</p>
-          <ProjectTabs slug={project.slug} />
-        </header>
-
-        <article className="fleet-panel fleet-stack">
-          <h2>Linked pages</h2>
-          <WikiPageList pages={pages} />
-        </article>
-      </section>
-    );
-  } catch (error) {
-    if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
-      notFound();
-    }
-
-    throw error;
-  }
+  return (
+    <article className="fleet-panel fleet-stack">
+      <h2>Linked pages</h2>
+      <p style={{ color: 'var(--fleet-text-muted)' }}>Derived knowledge surfaces for {project.title}.</p>
+      <WikiPageList pages={pages} />
+    </article>
+  );
 }
