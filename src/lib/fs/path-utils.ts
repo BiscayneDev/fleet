@@ -1,11 +1,13 @@
 import path from 'node:path';
 
-export const DATA_ROOT =
-  process.env.FLEET_DATA_ROOT || path.join(process.cwd(), 'data');
+export function getDataRoot(): string {
+  return process.env.FLEET_DATA_ROOT || path.join(process.cwd(), 'data');
+}
 
 export function resolveDataPath(relativePath: string): string {
-  const resolvedPath = path.resolve(DATA_ROOT, relativePath);
-  const relativeToRoot = path.relative(DATA_ROOT, resolvedPath);
+  const dataRoot = getDataRoot();
+  const resolvedPath = path.resolve(dataRoot, relativePath);
+  const relativeToRoot = path.relative(dataRoot, resolvedPath);
 
   if (
     relativeToRoot === '..' ||

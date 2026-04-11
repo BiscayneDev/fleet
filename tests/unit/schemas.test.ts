@@ -8,6 +8,7 @@ const validProject = {
   status: 'active',
   summary: 'Coordinate the alpha launch plan.',
   goals: ['Finalize launch checklist', 'Align stakeholders'],
+  desiredOutcomes: ['Launch with aligned stakeholders'],
   constraints: ['Budget capped', 'Two-week timeline'],
   nextActions: ['Draft launch brief', 'Book review meeting'],
   participants: ['halsey', 'ops'],

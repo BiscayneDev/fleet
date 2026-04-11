@@ -44,6 +44,7 @@ export interface Project {
   status: ProjectStatus;
   summary: string;
   goals: string[];
+  desiredOutcomes: string[];
   constraints: string[];
   nextActions: string[];
   participants: string[];

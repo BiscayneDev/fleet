@@ -17,6 +17,7 @@ export const projectSchema = z
     status: projectStatusSchema,
     summary: z.string(),
     goals: stringArraySchema,
+    desiredOutcomes: stringArraySchema,
     constraints: stringArraySchema,
     nextActions: stringArraySchema,
     participants: stringArraySchema,
@@ -27,6 +28,26 @@ export const projectSchema = z
     calendarEventIds: stringArraySchema,
     createdAt: isoDateTimeSchema,
     updatedAt: isoDateTimeSchema,
+  })
+  .strict();
+
+export const projectCreateSchema = z
+  .object({
+    title: z.string().trim().min(1),
+    summary: z.string().trim().min(1),
+    goals: stringArraySchema,
+    desiredOutcomes: stringArraySchema,
+    status: projectStatusSchema.optional(),
+  })
+  .strict();
+
+export const projectUpdateSchema = z
+  .object({
+    title: z.string().trim().min(1).optional(),
+    summary: z.string().trim().min(1).optional(),
+    goals: stringArraySchema.optional(),
+    desiredOutcomes: stringArraySchema.optional(),
+    status: projectStatusSchema.optional(),
   })
   .strict();
 
