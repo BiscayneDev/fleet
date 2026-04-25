@@ -2,6 +2,7 @@ import type { InboxItem } from '@/lib/fs/inbox-store';
 import type { WikiPageType } from '@/lib/fleet/types';
 
 import { createMockLlmWikiClient } from './mock';
+import { createRealLlmWikiClient } from './real';
 
 export const DEFAULT_LLM_WIKI_ADAPTER = 'mock';
 
@@ -60,6 +61,8 @@ export function getLlmWikiClient(): LlmWikiClient {
   switch (adapter) {
     case 'mock':
       return createMockLlmWikiClient();
+    case 'real':
+      return createRealLlmWikiClient();
     default:
       throw new Error(`Unsupported llm-wiki adapter: ${adapter}`);
   }
