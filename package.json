@@ -12,7 +12,11 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.53",
+    "@mozilla/readability": "^0.6.0",
+    "ai": "^6.0.168",
     "gray-matter": "^4.0.3",
+    "jsdom": "^29.0.2",
     "next": "16.0.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
@@ -21,6 +25,7 @@
   "devDependencies": {
     "@eslint/js": "^9.36.0",
     "@playwright/test": "^1.54.2",
+    "@types/jsdom": "^28.0.1",
     "@types/node": "24.6.0",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
