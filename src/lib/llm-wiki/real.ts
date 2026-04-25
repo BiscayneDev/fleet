@@ -37,7 +37,7 @@ async function enrichContent(input: EnrichmentInput): Promise<LlmWikiPage[]> {
   const prompt = buildEnrichmentPrompt(input);
 
   const { text } = await generateText({
-    model: provider(model),
+    model: provider.chat(model),
     system:
       'You are a research analyst. Return ONLY valid JSON. No markdown fences, no explanation.',
     prompt,

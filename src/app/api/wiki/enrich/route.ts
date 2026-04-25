@@ -59,7 +59,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       );
     }
 
-    console.error('[wiki/enrich]', error);
-    return NextResponse.json({ error: 'Enrichment failed' }, { status: 500 });
+    console.error('[wiki/enrich] Error:', error);
+    return NextResponse.json({ error: 'Enrichment failed', message: error instanceof Error ? error.message : 'Unknown' }, { status: 500 });
   }
 }
