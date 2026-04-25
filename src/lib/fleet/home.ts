@@ -51,15 +51,20 @@ function compareHomeProjectPriority(left: Project, right: Project): number {
 
 function summarizeAttention(project: Project): string | null {
   if (project.status === 'paused') {
-    return 'Paused projects need an explicit restart or closure decision.';
+    return 'Paused — needs restart or closure decision.';
   }
 
   if (project.status === 'active' && project.nextActions.length === 0) {
-    return 'Active project has no recorded next action yet.';
+    return 'Active but no next action recorded.';
   }
 
   if (project.status === 'draft' && project.goals.length === 0) {
-    return 'Draft project still needs goals before it can move forward.';
+    return 'Draft with no goals — needs direction.';
+  }
+
+  // Projects with no research yet
+  if (project.status === 'active' && project.sourceIds.length === 0) {
+    return 'Active but no research captured yet.';
   }
 
   return null;
