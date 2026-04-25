@@ -2,15 +2,17 @@ import { NextResponse } from 'next/server';
 import { ZodError, z } from 'zod';
 
 import { createInboxItem } from '@/lib/fs/inbox-store';
+import { writeWikiPage } from '@/lib/fs/wiki-store';
 import { getLlmWikiClient } from '@/lib/llm-wiki/client';
 
 const ingestLinkRequestSchema = z
   .object({
     url: z.url({ protocol: /^https?$/ }),
+    projectSlug: z.string().min(1).optional(),
   })
   .strict();
 
-export async function ingestLink(input: { url: string }) {
+export async function ingestLink(input: { url: string; projectSlug?: string }) {
   const payload = ingestLinkRequestSchema.parse(input);
   const item = await createInboxItem({ content: payload.url });
   const llmWiki = getLlmWikiClient();
@@ -19,9 +21,26 @@ export async function ingestLink(input: { url: string }) {
 
   const processed = await llmWiki.ingest({ source: item });
 
+  // If a project slug is provided, persist the wiki pages
+  const savedPages = [];
+  if (input.projectSlug) {
+    for (const page of processed.pages) {
+      const saved = await writeWikiPage(input.projectSlug, {
+        slug: page.id,
+        title: page.title,
+        type: page.type === 'source' ? 'source' : 'concept',
+        summary: page.summary,
+        body: page.summary,
+        sourceUrl: item.body,
+      });
+      savedPages.push(saved);
+    }
+  }
+
   return {
     item,
     processed,
+    pages: savedPages,
   };
 }
 
