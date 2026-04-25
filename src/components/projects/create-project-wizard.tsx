@@ -21,6 +21,7 @@ export function CreateProjectWizard() {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<WizardData>({
     title: '',
     summary: '',
@@ -66,6 +67,7 @@ export function CreateProjectWizard() {
 
   async function handleCreate() {
     setIsSubmitting(true);
+    setError(null);
     try {
       const response = await fetch('/api/projects', {
         method: 'POST',
@@ -85,9 +87,13 @@ export function CreateProjectWizard() {
         setData({ title: '', summary: '', goals: [''], desiredOutcomes: [''] });
         router.refresh();
         router.push(`/projects/${result.project.slug}`);
+      } else {
+        const err = await response.json();
+        setError(err.error || 'Failed to create project');
       }
     } catch (error) {
       console.error('Failed to create project:', error);
+      setError('Network error — please try again');
     } finally {
       setIsSubmitting(false);
     }
@@ -270,6 +276,19 @@ export function CreateProjectWizard() {
       )}
 
       {/* Navigation */}
+      {error && (
+        <div style={{
+          background: 'rgba(239, 68, 68, 0.1)',
+          border: '1px solid rgba(239, 68, 68, 0.3)',
+          borderRadius: '0.375rem',
+          padding: '0.5rem 0.75rem',
+          marginTop: '1rem',
+          fontSize: '0.8rem',
+          color: '#ef4444',
+        }}>
+          {error}
+        </div>
+      )}
       <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'space-between', marginTop: '1.5rem' }}>
         <button
           onClick={() => {
