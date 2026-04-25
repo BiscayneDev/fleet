@@ -45,12 +45,16 @@ export async function ingestLink(input: { url: string; projectSlug?: string }) {
 }
 
 export async function POST(request: Request): Promise<NextResponse> {
+  console.log('[ingest] POST received');
   try {
     const payload = ingestLinkRequestSchema.parse(await request.json());
+    console.log('[ingest] Payload parsed:', payload);
     const result = await ingestLink(payload);
+    console.log('[ingest] Success:', result.item.id);
 
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
+    console.error('[ingest] Error:', error);
     if (error instanceof SyntaxError) {
       return NextResponse.json(
         {
