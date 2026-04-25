@@ -69,7 +69,7 @@ export function ProjectActions({ slug, currentStatus }: { slug: string; currentS
           disabled={isChangingStatus}
           style={{
             appearance: 'none',
-            background: colors.bg,
+            backgroundColor: colors.bg,
             border: `1px solid ${colors.border}`,
             borderRadius: '999px',
             color: colors.text,
