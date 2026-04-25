@@ -17,11 +17,11 @@ function isLikelyUrl(value: string): boolean {
   }
 }
 
-export function CaptureForm() {
+export function CaptureForm({ preselectedProject }: { preselectedProject?: string } = {}) {
   const router = useRouter();
   const [content, setContent] = useState('');
   const [projects, setProjects] = useState<Project[]>([]);
-  const [selectedProject, setSelectedProject] = useState<string>('');
+  const [selectedProject, setSelectedProject] = useState<string>(preselectedProject ?? '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -125,8 +125,8 @@ export function CaptureForm() {
         />
       </label>
 
-      {/* Project picker — only visible when a URL is detected */}
-      {isUrl && projects.length > 0 && (
+      {/* Project picker — only visible when a URL is detected and no project preselected */}
+      {isUrl && !preselectedProject && projects.length > 0 && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span style={{ fontSize: '0.8rem', color: 'var(--fleet-text-muted)', whiteSpace: 'nowrap' }}>
             Research into:
@@ -169,11 +169,13 @@ export function CaptureForm() {
       >
         {isSubmitting
           ? status ?? 'Saving…'
-          : isUrl && selectedProject
-            ? 'Research & enrich'
-            : isUrl
-              ? 'Save link to inbox'
-              : 'Save to inbox'}
+          : isUrl
+            ? preselectedProject
+              ? 'Research & enrich'
+              : selectedProject
+                ? 'Research & enrich'
+                : 'Save link to inbox'
+            : 'Save to inbox'}
       </button>
     </form>
   );

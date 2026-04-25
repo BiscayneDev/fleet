@@ -1,4 +1,5 @@
 import { listWikiPages } from '@/lib/fs/wiki-store';
+import { CaptureForm } from '@/components/inbox/capture-form';
 import { getProjectOrNotFound, type ProjectRouteProps } from './project-page';
 
 export default async function ProjectWarRoom({ params }: ProjectRouteProps) {
@@ -16,6 +17,12 @@ export default async function ProjectWarRoom({ params }: ProjectRouteProps) {
 
   return (
     <div style={{ display: 'grid', gap: '1rem' }}>
+      {/* Quick capture for this project */}
+      <article className="fleet-panel fleet-stack">
+        <p className="fleet-eyebrow">Drop a link to research</p>
+        <CaptureForm preselectedProject={slug} />
+      </article>
+
       {/* Status bar */}
       <div
         style={{
