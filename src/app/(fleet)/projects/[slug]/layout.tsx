@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { ProjectTabs } from '@/components/projects/project-tabs';
+import { ProjectActions } from '@/components/projects/project-actions';
 
 import { getProjectOrNotFound, type ProjectRouteProps } from './project-page';
 
@@ -26,19 +27,7 @@ export default async function ProjectLayout({
             <p className="fleet-eyebrow">Project workspace</p>
             <h1 style={{ margin: 0 }}>{project.title}</h1>
           </div>
-          <span
-            style={{
-              background: 'rgba(56, 189, 248, 0.12)',
-              border: '1px solid var(--fleet-border)',
-              borderRadius: '999px',
-              color: 'var(--fleet-text)',
-              fontSize: '0.875rem',
-              padding: '0.35rem 0.7rem',
-              textTransform: 'capitalize',
-            }}
-          >
-            {project.status}
-          </span>
+          <ProjectActions slug={project.slug} currentStatus={project.status} />
         </div>
 
         <p>{project.summary}</p>
