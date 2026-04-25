@@ -1,4 +1,21 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+
+// Mock jsdom and readability to avoid ESM/CJS issues with Node 25
+vi.mock('jsdom', () => ({
+  JSDOM: vi.fn().mockImplementation(() => ({
+    window: { document: {} },
+  })),
+}));
+
+vi.mock('@mozilla/readability', () => ({
+  Readability: vi.fn().mockImplementation(() => ({
+    parse: vi.fn().mockReturnValue({
+      title: 'Mock Title',
+      textContent: 'Mock content',
+    }),
+  })),
+}));
+
 import { POST } from '@/app/api/wiki/enrich/route';
 
 describe('POST /api/wiki/enrich', () => {

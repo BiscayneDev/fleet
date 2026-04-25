@@ -42,12 +42,12 @@ async function enrichContent(input: EnrichmentInput): Promise<LlmWikiPage[]> {
       'You are a research analyst. Return ONLY valid JSON. No markdown fences, no explanation.',
     prompt,
     temperature: 0.3,
-    maxTokens: 1024,
+    maxOutputTokens: 1024,
   });
 
   const parsed = parseEnrichmentResponse(text);
   if (!parsed.ok) {
-    console.error('[llm-wiki] Failed to parse LLM response:', parsed.error);
+    console.error('[llm-wiki] Failed to parse LLM response:', (parsed as { error: string }).error);
     // Fall back to a basic source page
     return [
       {
