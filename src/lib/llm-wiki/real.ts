@@ -33,68 +33,81 @@ function resolveProvider() {
 }
 
 async function enrichContent(input: EnrichmentInput): Promise<LlmWikiPage[]> {
+  console.log('[llm-wiki] Enriching:', input.url, 'title:', input.title, 'text length:', input.text.length);
   const { provider, model } = resolveProvider();
   const prompt = buildEnrichmentPrompt(input);
 
-  const { text } = await generateText({
-    model: provider.chat(model),
-    system:
-      'You are a research analyst. Return ONLY valid JSON. No markdown fences, no explanation.',
-    prompt,
-    temperature: 0.3,
-    maxOutputTokens: 1024,
-  });
+  let text = '';
+  let llmWorked = false;
+  try {
+    const result = await generateText({
+      model: provider.languageModel(model),
+      system:
+        'You are a research analyst. Return ONLY valid JSON. No markdown fences, no explanation.',
+      prompt,
+      temperature: 0.3,
+      maxOutputTokens: 1024,
+    });
+    text = result.text;
+    console.log('[llm-wiki] Raw LLM response length:', text.length, 'preview:', text.slice(0, 200));
+    llmWorked = text.length > 0;
+  } catch (error) {
+    console.error('[llm-wiki] LLM error:', error);
+  }
 
-  const parsed = parseEnrichmentResponse(text);
-  if (!parsed.ok) {
-    console.error('[llm-wiki] Failed to parse LLM response:', (parsed as { error: string }).error);
-    // Fall back to a basic source page
-    return [
-      {
-        id: `wiki-${Date.now()}`,
+  // If LLM worked, try to parse the response
+  if (llmWorked) {
+    const parsed = parseEnrichmentResponse(text);
+    if (parsed.ok) {
+      const pages: LlmWikiPage[] = [];
+      const baseId = input.url.replace(/[^a-z0-9]+/gi, '-').slice(0, 50);
+
+      // Main summary page
+      pages.push({
+        id: `wiki-${baseId}`,
         type: 'source',
         title: input.title,
-        summary: `Content from ${input.url}`,
+        summary: parsed.data.summary,
         sourceId: input.url,
-      },
-    ];
+      });
+
+      // Concept pages
+      for (const concept of parsed.data.concepts.slice(0, 3)) {
+        pages.push({
+          id: `wiki-${baseId}-${concept.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+          type: 'concept',
+          title: concept,
+          summary: `Key concept from ${input.title}`,
+          sourceId: input.url,
+        });
+      }
+
+      // Competitor pages
+      for (const competitor of parsed.data.competitors.slice(0, 3)) {
+        pages.push({
+          id: `wiki-${baseId}-${competitor.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+          type: 'concept',
+          title: competitor,
+          summary: `Competitor identified in ${input.title}`,
+          sourceId: input.url,
+        });
+      }
+
+      return pages;
+    }
   }
 
-  const pages: LlmWikiPage[] = [];
-  const baseId = input.url.replace(/[^a-z0-9]+/gi, '-').slice(0, 50);
-
-  // Main summary page
-  pages.push({
-    id: `wiki-${baseId}`,
-    type: 'source',
-    title: input.title,
-    summary: parsed.data.summary,
-    sourceId: input.url,
-  });
-
-  // Concept pages
-  for (const concept of parsed.data.concepts.slice(0, 3)) {
-    pages.push({
-      id: `wiki-${baseId}-${concept.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-      type: 'concept',
-      title: concept,
-      summary: `Key concept from ${input.title}`,
+  // Fallback: use scraped content directly
+  const excerpt = input.text.slice(0, 500).replace(/\s+/g, ' ').trim();
+  return [
+    {
+      id: `wiki-${Date.now()}`,
+      type: 'source',
+      title: input.title,
+      summary: excerpt || `Content from ${input.url}`,
       sourceId: input.url,
-    });
-  }
-
-  // Competitor pages
-  for (const competitor of parsed.data.competitors.slice(0, 3)) {
-    pages.push({
-      id: `wiki-${baseId}-${competitor.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-      type: 'concept',
-      title: competitor,
-      summary: `Competitor identified in ${input.title}`,
-      sourceId: input.url,
-    });
-  }
-
-  return pages;
+    },
+  ];
 }
 
 export function createRealLlmWikiClient(): LlmWikiClient {
@@ -118,6 +131,7 @@ export function createRealLlmWikiClient(): LlmWikiClient {
 
       if (isUrl) {
         const scraped = await scrapeUrl(url);
+        console.log('[llm-wiki] Scrape result:', scraped.ok ? 'ok' : 'failed', scraped);
         if (scraped.ok) {
           const pages = await enrichContent({
             title: scraped.title,
