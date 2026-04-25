@@ -1,5 +1,5 @@
 import { ProjectList } from '@/components/projects/project-list';
-import { CreateProjectButton } from '@/components/projects/create-project-button';
+import { CreateProjectWizard } from '@/components/projects/create-project-wizard';
 import { listProjects } from '@/lib/fs/project-store';
 
 export default async function ProjectsPage() {
@@ -16,7 +16,7 @@ export default async function ProjectsPage() {
               Browse project briefs and open a workspace for sources, wiki context, artifacts, and sessions.
             </p>
           </div>
-          <CreateProjectButton />
+          <CreateProjectWizard />
         </div>
       </header>
 
