@@ -39,6 +39,7 @@ async function enrichContent(input: EnrichmentInput): Promise<LlmWikiPage[]> {
 
   let text = '';
   let llmWorked = false;
+  console.log('[llm-wiki] Calling LLM with model:', model, 'base URL:', process.env.LLM_WIKI_BASE_URL);
   try {
     const result = await generateText({
       model: provider.languageModel(model),
@@ -57,7 +58,9 @@ async function enrichContent(input: EnrichmentInput): Promise<LlmWikiPage[]> {
 
   // If LLM worked, try to parse the response
   if (llmWorked) {
+    console.log('[llm-wiki] LLM worked, attempting to parse...');
     const parsed = parseEnrichmentResponse(text);
+    console.log('[llm-wiki] Parse result:', parsed.ok ? 'success' : 'failed', parsed.ok ? '' : (parsed as { error: string }).error);
     if (parsed.ok) {
       const pages: LlmWikiPage[] = [];
       const baseId = input.url.replace(/[^a-z0-9]+/gi, '-').slice(0, 50);

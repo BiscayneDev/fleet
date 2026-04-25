@@ -60,20 +60,55 @@ export function parseEnrichmentResponse(raw: string): ParseResult {
 
     const parsed = JSON.parse(cleaned);
 
-    const data: EnrichmentData = {
-      summary: String(parsed.summary ?? ''),
-      concepts: Array.isArray(parsed.concepts) ? parsed.concepts.map(String) : [],
-      competitors: Array.isArray(parsed.competitors) ? parsed.competitors.map(String) : [],
-      risks: Array.isArray(parsed.risks) ? parsed.risks.map(String) : [],
-      suggestedActions: Array.isArray(parsed.suggestedActions)
-        ? parsed.suggestedActions.map(String)
-        : [],
-    };
+    // Handle multiple possible response formats
+    let summary = '';
+    let concepts: string[] = [];
+    let competitors: string[] = [];
+    let risks: string[] = [];
+    let suggestedActions: string[] = [];
 
-    if (!data.summary) {
+    console.log('[llm-wiki] Parsed JSON keys:', Object.keys(parsed));
+
+    // Format 1: { summary, concepts, competitors, risks, suggestedActions }
+    if (parsed.summary) {
+      summary = String(parsed.summary);
+      concepts = Array.isArray(parsed.concepts) ? parsed.concepts.map(String) : [];
+      competitors = Array.isArray(parsed.competitors) ? parsed.competitors.map(String) : [];
+      risks = Array.isArray(parsed.risks) ? parsed.risks.map(String) : [];
+      suggestedActions = Array.isArray(parsed.suggestedActions) ? parsed.suggestedActions.map(String) : [];
+    }
+    // Format 2: { overview: { description, ... }, competitors: [...], etc }
+    else if (parsed.overview) {
+      summary = String(parsed.overview.description || parsed.overview.summary || '');
+      concepts = [
+        ...(Array.isArray(parsed.overview.key_products) ? parsed.overview.key_products : []),
+        ...(Array.isArray(parsed.key_concepts) ? parsed.key_concepts : []),
+        ...(Array.isArray(parsed.products) ? parsed.products : []),
+      ].map(String);
+      competitors = (Array.isArray(parsed.competitors) ? parsed.competitors : [])
+        .map((c: unknown) => typeof c === 'string' ? c : String((c as Record<string, unknown>).name || c))
+        .filter(Boolean);
+      risks = (Array.isArray(parsed.risks) ? parsed.risks : [])
+        .map((r: unknown) => typeof r === 'string' ? r : String((r as Record<string, unknown>).description || r))
+        .filter(Boolean);
+      suggestedActions = (Array.isArray(parsed.suggested_actions) ? parsed.suggested_actions : [])
+        .map((a: unknown) => typeof a === 'string' ? a : String((a as Record<string, unknown>).action || a))
+        .filter(Boolean);
+    }
+    // Format 3: { description, key_features, ... }
+    else if (parsed.description) {
+      summary = String(parsed.description);
+      concepts = (parsed.key_features || parsed.features || []).map(String);
+      competitors = (parsed.competitors || []).map(String);
+      risks = (parsed.risks || []).map(String);
+      suggestedActions = (parsed.next_steps || parsed.actions || []).map(String);
+    }
+
+    if (!summary) {
       return { ok: false, error: 'Missing summary in LLM response' };
     }
 
+    const data: EnrichmentData = { summary, concepts, competitors, risks, suggestedActions };
     return { ok: true, data };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown parse error';
