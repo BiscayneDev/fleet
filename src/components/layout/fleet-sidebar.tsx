@@ -10,9 +10,27 @@ export function FleetSidebar() {
 
   return (
     <aside className="fleet-sidebar">
-      <div>
-        <p className="fleet-eyebrow">Fleet</p>
-        <h1>Workspace</h1>
+      <div style={{ padding: '0.25rem 0.75rem 0' }}>
+        <Link href="/home" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <span style={{
+            fontSize: '1.1rem',
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+            color: 'var(--fleet-accent)',
+          }}>
+            Fleet
+          </span>
+          <span style={{
+            fontSize: '0.65rem',
+            color: 'var(--fleet-text-muted)',
+            marginLeft: '0.4rem',
+            fontWeight: 500,
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+          }}>
+            GTM
+          </span>
+        </Link>
       </div>
 
       <nav aria-label="Fleet navigation">
@@ -22,9 +40,12 @@ export function FleetSidebar() {
 
             return (
               <li key={item.key}>
-                <Link aria-current={active ? 'page' : undefined} className="fleet-nav-link" href={item.href}>
+                <Link
+                  aria-current={active ? 'page' : undefined}
+                  className="fleet-nav-link"
+                  href={item.href}
+                >
                   <span>{item.label}</span>
-                  <span className="fleet-nav-key">/{item.key}</span>
                 </Link>
               </li>
             );

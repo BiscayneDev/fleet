@@ -3,6 +3,7 @@ export type FleetNavItem = {
     | 'home'
     | 'projects'
     | 'inbox'
+    | 'network'
     | 'gmail'
     | 'calendar'
     | 'wiki'
@@ -16,6 +17,7 @@ export const fleetNavItems: FleetNavItem[] = [
   { key: 'home', label: 'Home', href: '/home' },
   { key: 'projects', label: 'Projects', href: '/projects' },
   { key: 'inbox', label: 'Inbox', href: '/inbox' },
+  { key: 'network', label: 'Network', href: '/network' },
   { key: 'gmail', label: 'Gmail', href: '/gmail' },
   { key: 'calendar', label: 'Calendar', href: '/calendar' },
   { key: 'wiki', label: 'Wiki', href: '/wiki' },

@@ -32,7 +32,7 @@ function resolveProvider() {
   return { provider, model };
 }
 
-async function enrichContent(input: EnrichmentInput): Promise<LlmWikiPage[]> {
+export async function enrichContent(input: EnrichmentInput): Promise<LlmWikiPage[]> {
   console.log('[llm-wiki] Enriching:', input.url, 'title:', input.title, 'text length:', input.text.length);
   const { provider, model } = resolveProvider();
   const prompt = buildEnrichmentPrompt(input);

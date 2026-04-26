@@ -26,15 +26,23 @@ export const wikiPageTypes = [
 export type WikiPageType = (typeof wikiPageTypes)[number];
 
 export const artifactTypes = [
+  'competitive-analysis',
+  'positioning',
+  'icp-profile',
+  'channel-strategy',
+  'launch-plan',
+  'messaging',
+  'pricing-analysis',
+  'action-plan',
+  'network-analysis',
   'brief',
   'memo',
-  'draft',
-  'checklist',
-  'plan',
-  'table',
-  'spec',
   'report',
 ] as const;
+
+export const connectionPlatforms = ['twitter', 'linkedin'] as const;
+
+export type ConnectionPlatform = (typeof connectionPlatforms)[number];
 
 export type ArtifactType = (typeof artifactTypes)[number];
 
@@ -55,6 +63,42 @@ export interface Project {
   calendarEventIds: string[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Artifact {
+  slug: string;
+  title: string;
+  type: ArtifactType;
+  body: string;
+  sourcePageSlugs: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Connection {
+  id: string;
+  platform: ConnectionPlatform;
+  handle: string;
+  displayName: string;
+  company: string | null;
+  position: string | null;
+  bio: string | null;
+  email: string | null;
+  tags: string[];
+  relevanceNotes: string | null;
+  projectSlugs: string[];
+  importedAt: string;
+  updatedAt: string;
+}
+
+export interface NetworkImportMeta {
+  id: string;
+  platform: ConnectionPlatform;
+  filename: string;
+  connectionCount: number;
+  newCount: number;
+  updatedCount: number;
+  importedAt: string;
 }
 
 export interface Source {

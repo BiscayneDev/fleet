@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.53",
+    "@ai-sdk/react": "^3.0.170",
     "@mozilla/readability": "^0.6.0",
     "ai": "^6.0.168",
     "gray-matter": "^4.0.3",
