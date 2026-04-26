@@ -94,6 +94,16 @@ export function GtmBuilder({
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <AutoresearchButton projectSlug={projectSlug} />
+          {completed > 0 && (
+            <a
+              href={`/projects/${projectSlug}/gtm/export`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="gtm-export-link"
+            >
+              Export
+            </a>
+          )}
           <span className="gtm-context-badge">{sourceCount} sources</span>
           <span className="gtm-context-badge">{connectionCount} connections</span>
         </div>

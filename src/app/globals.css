@@ -771,6 +771,21 @@ button {
   animation: spin 0.8s linear infinite;
 }
 
+.gtm-export-link {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--fleet-accent);
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 0.35rem;
+  transition: background 0.15s;
+}
+
+.gtm-export-link:hover {
+  background: rgba(56, 189, 248, 0.08);
+}
+
 .gtm-locked-label {
   font-size: 0.68rem;
   color: var(--fleet-text-muted);
@@ -790,6 +805,165 @@ button {
 .gtm-content-p { font-size: 0.8rem; margin: 0.1rem 0; line-height: 1.6; }
 .gtm-content-bold { font-size: 0.8rem; margin: 0.25rem 0; font-weight: 600; }
 .gtm-content-li { font-size: 0.8rem; margin-left: 1rem; line-height: 1.6; }
+
+/* ─── Onboarding ─── */
+
+.onboarding {
+  background: linear-gradient(135deg, var(--fleet-panel) 0%, rgba(56, 189, 248, 0.04) 100%);
+  border: 1px solid var(--fleet-border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  display: grid;
+  gap: 1.25rem;
+  box-shadow: var(--fleet-shadow-lg);
+}
+
+.onboarding-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.onboarding-title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.onboarding-subtitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.82rem;
+  color: var(--fleet-text-muted);
+}
+
+.onboarding-progress-ring {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid var(--fleet-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.onboarding-progress-count {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--fleet-accent);
+}
+
+.onboarding-steps {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.onboarding-step {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  background: var(--fleet-bg);
+  border: 1px solid var(--fleet-border);
+  border-radius: 0.5rem;
+  transition: border-color 0.15s;
+}
+
+.onboarding-step:not(.onboarding-step-done):hover {
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.onboarding-step-done {
+  opacity: 0.6;
+}
+
+.onboarding-step-indicator {
+  flex-shrink: 0;
+}
+
+.onboarding-number {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--fleet-panel-muted);
+  border: 1px solid var(--fleet-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--fleet-text-muted);
+}
+
+.onboarding-check {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #22c55e;
+}
+
+.onboarding-step-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.onboarding-step-title {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.onboarding-step-subtitle {
+  margin: 0.05rem 0 0;
+  font-size: 0.72rem;
+  color: var(--fleet-text-muted);
+}
+
+.onboarding-step-action {
+  flex-shrink: 0;
+}
+
+.onboarding-cta {
+  background: var(--fleet-accent);
+  color: var(--fleet-bg);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.35rem 0.7rem;
+  border-radius: 0.35rem;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.onboarding-cta:hover {
+  opacity: 0.85;
+}
+
+.onboarding-done-label {
+  font-size: 0.68rem;
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.onboarding-dismiss {
+  background: none;
+  border: none;
+  color: var(--fleet-text-muted);
+  font-size: 0.72rem;
+  cursor: pointer;
+  padding: 0;
+  text-align: center;
+  transition: color 0.15s;
+}
+
+.onboarding-dismiss:hover {
+  color: var(--fleet-text);
+}
 
 /* ─── Markdown Renderer ─── */
 

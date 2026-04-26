@@ -6,6 +6,7 @@ import { listWikiPages } from '@/lib/fs/wiki-store';
 import { getNetworkStats } from '@/lib/fs/network-store';
 import { gtmSteps } from '@/lib/gtm/steps';
 import { CaptureForm } from '@/components/inbox/capture-form';
+import { Onboarding } from '@/components/home/onboarding';
 
 async function getProjectGtmProgress(slug: string) {
   const artifacts = await listArtifacts(slug);
@@ -35,8 +36,53 @@ export default async function FleetHomePage() {
   const totalArtifacts = projectsWithGtm.reduce((sum, p) => sum + p.gtm.artifacts.length, 0);
   const totalSources = projectsWithGtm.reduce((sum, p) => sum + p.sourceCount, 0);
 
+  const hasAnyGtm = projectsWithGtm.some((p) => p.gtm.completed > 0);
+  const firstProject = projectsWithGtm[0] ?? null;
+
+  const needsOnboarding = projects.length === 0 || totalSources === 0 || networkStats.total === 0 || !hasAnyGtm;
+
+  const onboardingSteps = [
+    {
+      key: 'project',
+      title: 'Create your first project',
+      subtitle: 'Define what you\'re building, your goals, and desired outcomes.',
+      href: '/projects',
+      cta: 'Create Project',
+      complete: projects.length > 0,
+    },
+    {
+      key: 'capture',
+      title: 'Capture some research',
+      subtitle: 'Paste competitor links, articles, or notes into your project.',
+      href: firstProject ? `/projects/${firstProject.slug}` : '/projects',
+      cta: 'Start Capturing',
+      complete: totalSources > 0,
+    },
+    {
+      key: 'network',
+      title: 'Import your network',
+      subtitle: 'Drop your LinkedIn or Twitter export to unlock network intelligence.',
+      href: '/network',
+      cta: 'Import Network',
+      complete: networkStats.total > 0,
+    },
+    {
+      key: 'gtm',
+      title: 'Build your GTM',
+      subtitle: 'One click generates your complete go-to-market strategy.',
+      href: firstProject ? `/projects/${firstProject.slug}/gtm` : '/projects',
+      cta: 'Build GTM',
+      complete: hasAnyGtm,
+    },
+  ];
+
   return (
     <section className="fleet-stack">
+      {/* Onboarding */}
+      {needsOnboarding && (
+        <Onboarding steps={onboardingSteps} projectSlug={firstProject?.slug ?? null} />
+      )}
+
       {/* Header */}
       <header className="fleet-panel fleet-stack">
         <p className="fleet-eyebrow">Command Center</p>
