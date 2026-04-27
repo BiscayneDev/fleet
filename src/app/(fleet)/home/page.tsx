@@ -83,198 +83,170 @@ export default async function FleetHomePage() {
         <Onboarding steps={onboardingSteps} projectSlug={firstProject?.slug ?? null} />
       )}
 
-      {/* Header */}
-      <header className="fleet-panel fleet-stack">
-        <p className="fleet-eyebrow">Command Center</p>
-        <h1 style={{ margin: 0, fontSize: '1.3rem' }}>Good {getTimeOfDay()}.</h1>
-        <p style={{ color: 'var(--fleet-text-muted)', margin: 0, fontSize: '0.85rem' }}>
-          {projects.length === 0
-            ? 'Create your first project to get started with Fleet.'
-            : `${activeProjects.length} active project${activeProjects.length !== 1 ? 's' : ''}, ${totalSources} sources captured, ${totalArtifacts} artifacts generated.`}
-        </p>
+      {/* Hero header */}
+      <header className="home-hero">
+        <div className="home-hero-text">
+          <h1 className="home-hero-title">Good {getTimeOfDay()}.</h1>
+          <p className="home-hero-subtitle">
+            {projects.length === 0
+              ? 'Create your first project to get started with Fleet.'
+              : `${activeProjects.length} active project${activeProjects.length !== 1 ? 's' : ''}, ${totalSources} sources captured, ${totalArtifacts} artifacts generated.`}
+          </p>
+        </div>
       </header>
 
       {/* Stats row */}
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <div className="home-stats-row">
         <StatCard label="Projects" value={String(projects.length)} href="/projects" />
         <StatCard label="Sources" value={String(totalSources)} />
         <StatCard label="Connections" value={String(networkStats.total)} href="/network" />
         <StatCard label="Artifacts" value={String(totalArtifacts)} />
       </div>
 
-      {/* Main grid */}
-      <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 320px' }}>
-        {/* Left: Projects with GTM progress */}
-        <div className="fleet-stack">
-          <article className="fleet-panel fleet-stack">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h2 style={{ margin: 0, fontSize: '0.9rem' }}>Projects</h2>
+      {/* Quick actions */}
+      <div className="home-actions">
+        <Link href="/projects/quick-start" className="home-action-card home-action-accent">
+          <span className="home-action-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+            </svg>
+          </span>
+          <span className="home-action-label">Idea to GTM in 60s</span>
+          <span className="home-action-desc">One sentence to full strategy</span>
+        </Link>
+        {firstProject && (
+          <Link href={`/projects/${firstProject.slug}`} className="home-action-card">
+            <span className="home-action-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+            </span>
+            <span className="home-action-label">Open War Room</span>
+            <span className="home-action-desc">Chat with your GTM agent</span>
+          </Link>
+        )}
+        <Link href="/network" className="home-action-card">
+          <span className="home-action-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </span>
+          <span className="home-action-label">Import Network</span>
+          <span className="home-action-desc">LinkedIn or Twitter connections</span>
+        </Link>
+        {firstProject && (
+          <Link href={`/projects/${firstProject.slug}/gtm`} className="home-action-card home-action-accent">
+            <span className="home-action-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
+            </span>
+            <span className="home-action-label">Build GTM</span>
+            <span className="home-action-desc">Generate your go-to-market</span>
+          </Link>
+        )}
+      </div>
+
+      {/* Projects list */}
+      {projectsWithGtm.length > 0 && (
+        <div className="fleet-panel fleet-stack">
+          <div className="home-section-header">
+            <h2 className="fleet-heading-sm">Projects</h2>
+            <Link href="/projects" className="home-view-all">View all →</Link>
+          </div>
+
+          <div className="home-project-list">
+            {projectsWithGtm.slice(0, 5).map((project) => (
               <Link
-                href="/projects"
-                style={{ fontSize: '0.75rem', color: 'var(--fleet-accent)', fontWeight: 600 }}
+                key={project.slug}
+                href={`/projects/${project.slug}`}
+                className="home-project-card fleet-panel-interactive"
               >
-                View all
+                <div className="home-project-top">
+                  <strong className="home-project-title">{project.title}</strong>
+                  <span className={`fleet-badge ${project.status === 'active' ? 'fleet-badge-active' : project.status === 'draft' ? 'fleet-badge-draft' : 'fleet-badge-paused'}`}>
+                    {project.status === 'active' && <span className="fleet-badge-dot" />}
+                    {project.status}
+                  </span>
+                </div>
+
+                {/* GTM progress bar */}
+                <div className="home-project-progress">
+                  <div className="home-project-progress-track">
+                    <div
+                      className="home-project-progress-fill"
+                      style={{
+                        width: `${(project.gtm.completed / project.gtm.total) * 100}%`,
+                        background: project.gtm.completed === project.gtm.total
+                          ? 'var(--fleet-success)'
+                          : 'linear-gradient(90deg, var(--fleet-accent) 0%, #818cf8 100%)',
+                      }}
+                    />
+                  </div>
+                  <span className="home-project-progress-label">
+                    GTM {project.gtm.completed}/{project.gtm.total}
+                  </span>
+                </div>
+
+                <div className="home-project-meta">
+                  <span>{project.sourceCount} sources</span>
+                  <span>{project.gtm.artifacts.length} artifacts</span>
+                </div>
               </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Network + Capture row */}
+      <div className="home-bottom-row">
+        {/* Quick capture */}
+        <article className="fleet-panel">
+          <p className="fleet-eyebrow" style={{ marginBottom: '0.5rem' }}>Quick Capture</p>
+          <CaptureForm />
+        </article>
+
+        {/* Network summary */}
+        {networkStats.total > 0 ? (
+          <article className="fleet-panel fleet-stack">
+            <div className="home-section-header">
+              <h3 className="fleet-heading-sm">Network</h3>
+              <Link href="/network" className="home-view-all">View →</Link>
             </div>
-
-            {projectsWithGtm.length > 0 ? (
-              <div style={{ display: 'grid', gap: '0.5rem' }}>
-                {projectsWithGtm.slice(0, 5).map((project) => (
-                  <Link
-                    key={project.slug}
-                    href={`/projects/${project.slug}`}
-                    style={{
-                      display: 'grid',
-                      gap: '0.35rem',
-                      background: 'var(--fleet-bg)',
-                      border: '1px solid var(--fleet-border)',
-                      borderRadius: '0.5rem',
-                      padding: '0.65rem 0.75rem',
-                      textDecoration: 'none',
-                      color: 'inherit',
-                      transition: 'border-color 0.15s',
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <strong style={{ fontSize: '0.85rem' }}>{project.title}</strong>
-                      <span style={{
-                        fontSize: '0.6rem',
-                        fontWeight: 600,
-                        textTransform: 'uppercase',
-                        color: project.status === 'active' ? '#22c55e' : 'var(--fleet-text-muted)',
-                      }}>
-                        {project.status}
-                      </span>
-                    </div>
-
-                    {/* GTM progress bar */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <div style={{
-                        flex: 1,
-                        height: '4px',
-                        background: 'var(--fleet-panel-muted)',
-                        borderRadius: '2px',
-                        overflow: 'hidden',
-                      }}>
-                        <div style={{
-                          width: `${(project.gtm.completed / project.gtm.total) * 100}%`,
-                          height: '100%',
-                          background: project.gtm.completed === project.gtm.total
-                            ? '#22c55e'
-                            : 'linear-gradient(90deg, var(--fleet-accent) 0%, #818cf8 100%)',
-                          borderRadius: '2px',
-                          transition: 'width 0.3s',
-                        }} />
-                      </div>
-                      <span style={{ fontSize: '0.65rem', color: 'var(--fleet-text-muted)', whiteSpace: 'nowrap' }}>
-                        GTM {project.gtm.completed}/{project.gtm.total}
-                      </span>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.7rem', color: 'var(--fleet-text-muted)' }}>
-                      <span>{project.sourceCount} sources</span>
-                      <span>{project.gtm.artifacts.length} artifacts</span>
-                    </div>
-                  </Link>
+            <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+              {networkStats.linkedin > 0 && (
+                <span className="fleet-badge" style={{ background: 'rgba(0, 119, 181, 0.12)', color: '#0077b5' }}>
+                  {networkStats.linkedin} LinkedIn
+                </span>
+              )}
+              {networkStats.twitter > 0 && (
+                <span className="fleet-badge" style={{ background: 'rgba(29, 155, 240, 0.12)', color: '#1d9bf0' }}>
+                  {networkStats.twitter} Twitter
+                </span>
+              )}
+            </div>
+            {networkStats.topCompanies.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+                {networkStats.topCompanies.slice(0, 6).map((c) => (
+                  <span key={c.name} className="fleet-badge fleet-badge-paused">
+                    {c.name} ({c.count})
+                  </span>
                 ))}
-              </div>
-            ) : (
-              <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--fleet-text-muted)', fontSize: '0.85rem' }}>
-                <p style={{ margin: '0 0 0.5rem' }}>No projects yet.</p>
-                <Link
-                  href="/projects"
-                  style={{ color: 'var(--fleet-accent)', fontWeight: 600 }}
-                >
-                  Create your first project
-                </Link>
               </div>
             )}
           </article>
-        </div>
-
-        {/* Right: Quick actions + capture */}
-        <div className="fleet-stack">
-          {/* Quick capture */}
-          <article className="fleet-panel">
-            <CaptureForm />
+        ) : (
+          <article className="fleet-panel" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.35rem' }}>
+            <p style={{ margin: 0, fontSize: '0.82rem', fontWeight: 600 }}>Import your network</p>
+            <p className="fleet-caption" style={{ margin: 0 }}>
+              Drop your LinkedIn or Twitter export to unlock network intelligence.
+            </p>
+            <Link href="/network" style={{ fontSize: '0.75rem', color: 'var(--fleet-accent)', fontWeight: 600, marginTop: '0.25rem' }}>
+              Go to Network →
+            </Link>
           </article>
-
-          {/* Network summary */}
-          {networkStats.total > 0 && (
-            <article className="fleet-panel fleet-stack">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ margin: 0, fontSize: '0.85rem' }}>Network</h3>
-                <Link
-                  href="/network"
-                  style={{ fontSize: '0.72rem', color: 'var(--fleet-accent)', fontWeight: 600 }}
-                >
-                  View
-                </Link>
-              </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                {networkStats.linkedin > 0 && (
-                  <span style={{
-                    fontSize: '0.7rem',
-                    background: 'rgba(0, 119, 181, 0.12)',
-                    color: '#0077b5',
-                    padding: '0.2rem 0.5rem',
-                    borderRadius: '0.75rem',
-                    fontWeight: 600,
-                  }}>
-                    {networkStats.linkedin} LinkedIn
-                  </span>
-                )}
-                {networkStats.twitter > 0 && (
-                  <span style={{
-                    fontSize: '0.7rem',
-                    background: 'rgba(29, 155, 240, 0.12)',
-                    color: '#1d9bf0',
-                    padding: '0.2rem 0.5rem',
-                    borderRadius: '0.75rem',
-                    fontWeight: 600,
-                  }}>
-                    {networkStats.twitter} Twitter
-                  </span>
-                )}
-              </div>
-              {networkStats.topCompanies.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
-                  {networkStats.topCompanies.slice(0, 4).map((c) => (
-                    <span key={c.name} style={{
-                      fontSize: '0.65rem',
-                      background: 'var(--fleet-panel-muted)',
-                      padding: '0.15rem 0.4rem',
-                      borderRadius: '0.5rem',
-                      color: 'var(--fleet-text-muted)',
-                    }}>
-                      {c.name} ({c.count})
-                    </span>
-                  ))}
-                </div>
-              )}
-            </article>
-          )}
-
-          {/* Import CTA if no network */}
-          {networkStats.total === 0 && (
-            <article className="fleet-panel" style={{ textAlign: 'center' }}>
-              <p style={{ margin: '0 0 0.35rem', fontSize: '0.82rem', fontWeight: 600 }}>Import your network</p>
-              <p style={{ margin: '0 0 0.5rem', fontSize: '0.75rem', color: 'var(--fleet-text-muted)' }}>
-                Drop your LinkedIn or Twitter export to unlock network intelligence.
-              </p>
-              <Link
-                href="/network"
-                style={{
-                  fontSize: '0.75rem',
-                  color: 'var(--fleet-accent)',
-                  fontWeight: 600,
-                }}
-              >
-                Go to Network
-              </Link>
-            </article>
-          )}
-        </div>
+        )}
       </div>
     </section>
   );
@@ -288,26 +260,16 @@ function getTimeOfDay(): string {
 }
 
 function StatCard({ label, value, href }: { label: string; value: string; href?: string }) {
-  const content = (
-    <div style={{
-      flex: 1,
-      background: 'var(--fleet-panel)',
-      border: '1px solid var(--fleet-border)',
-      borderRadius: '0.5rem',
-      padding: '0.5rem 0.75rem',
-      boxShadow: 'var(--fleet-shadow)',
-      transition: 'border-color 0.15s',
-    }}>
-      <p style={{ margin: 0, fontSize: '0.6rem', color: 'var(--fleet-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
-        {label}
-      </p>
-      <p style={{ margin: '0.1rem 0 0', fontSize: '1.1rem', fontWeight: 700 }}>{value}</p>
+  const inner = (
+    <div className="home-stat-card">
+      <p className="home-stat-label">{label}</p>
+      <p className="home-stat-value">{value}</p>
     </div>
   );
 
   if (href) {
-    return <Link href={href} style={{ flex: 1, textDecoration: 'none', color: 'inherit' }}>{content}</Link>;
+    return <Link href={href} className="home-stat-link">{inner}</Link>;
   }
 
-  return content;
+  return inner;
 }

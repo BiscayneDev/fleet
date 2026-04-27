@@ -8,11 +8,8 @@ describe('fleetNavItems', () => {
       'home',
       'projects',
       'inbox',
-      'gmail',
-      'calendar',
+      'network',
       'wiki',
-      'agents',
-      'artifacts',
     ]);
   });
 });

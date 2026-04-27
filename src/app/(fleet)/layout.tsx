@@ -1,7 +1,9 @@
+'use client';
+
 import type { ReactNode } from 'react';
 
 import { FleetHeader } from '@/components/layout/fleet-header';
-import { FleetRightRail } from '@/components/layout/fleet-right-rail';
+import { FleetSearchDialog } from '@/components/layout/fleet-search-dialog';
 import { FleetSidebar } from '@/components/layout/fleet-sidebar';
 
 export default function FleetLayout({ children }: { children: ReactNode }) {
@@ -12,7 +14,7 @@ export default function FleetLayout({ children }: { children: ReactNode }) {
         <FleetHeader />
         <main className="fleet-content">{children}</main>
       </div>
-      <FleetRightRail />
+      <FleetSearchDialog />
     </div>
   );
 }

@@ -32,11 +32,23 @@ export function parseLinkedInCSV(csvContent: string): CreateConnectionInput[] {
 
   if (lines.length < 2) return [];
 
-  const header = parseCSVLine(lines[0]).map((h) => h.toLowerCase().trim());
+  // LinkedIn exports include disclaimer lines before the actual CSV header.
+  // Find the line that contains the column headers.
+  let headerLineIdx = lines.findIndex((line) => {
+    const lower = line.toLowerCase();
+    return lower.includes('first name') && lower.includes('last name');
+  });
+
+  if (headerLineIdx === -1) {
+    throw new Error('CSV must contain "First Name" and "Last Name" columns');
+  }
+
+  const header = parseCSVLine(lines[headerLineIdx]).map((h) => h.toLowerCase().trim());
 
   const firstNameIdx = header.findIndex((h) => h.includes('first name'));
   const lastNameIdx = header.findIndex((h) => h.includes('last name'));
   const emailIdx = header.findIndex((h) => h.includes('email'));
+  const urlIdx = header.findIndex((h) => h === 'url' || h.includes('profile'));
   const companyIdx = header.findIndex((h) => h.includes('company'));
   const positionIdx = header.findIndex((h) => h.includes('position'));
 
@@ -46,7 +58,7 @@ export function parseLinkedInCSV(csvContent: string): CreateConnectionInput[] {
 
   const connections: CreateConnectionInput[] = [];
 
-  for (let i = 1; i < lines.length; i++) {
+  for (let i = headerLineIdx + 1; i < lines.length; i++) {
     const fields = parseCSVLine(lines[i]);
     const firstName = fields[firstNameIdx] ?? '';
     const lastName = fields[lastNameIdx] ?? '';
@@ -54,10 +66,12 @@ export function parseLinkedInCSV(csvContent: string): CreateConnectionInput[] {
 
     if (!displayName) continue;
 
-    const handle = displayName
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+    // Extract LinkedIn username from profile URL if available
+    const profileUrl = urlIdx !== -1 ? (fields[urlIdx] ?? '') : '';
+    const urlMatch = profileUrl.match(/linkedin\.com\/in\/([^/?]+)/);
+    const handle = urlMatch
+      ? urlMatch[1]
+      : displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
     connections.push({
       platform: 'linkedin',

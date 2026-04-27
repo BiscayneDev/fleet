@@ -1,37 +1,45 @@
+import Link from 'next/link';
+
+import { listWikiPages } from '@/lib/fs/wiki-store';
 import { getProjectOrNotFound, type ProjectRouteProps } from '../project-page';
 
 export default async function ProjectSourcesPage({ params }: ProjectRouteProps) {
   const { slug } = await params;
   const project = await getProjectOrNotFound(slug);
-  const sourceItems = project.sourceIds;
+  const wikiPages = await listWikiPages(slug);
 
   return (
     <article className="fleet-panel fleet-stack">
-      <h2>Linked source records</h2>
-      <p style={{ color: 'var(--fleet-text-muted)' }}>
-        Sources linked to {project.title} will appear here as they are ingested.
+      <h2 className="fleet-heading">Linked Sources</h2>
+      <p className="fleet-caption">
+        Research captured and enriched for {project.title}.
       </p>
-      {sourceItems.length > 0 ? (
-        <ul style={{ display: 'grid', gap: '0.75rem', listStyle: 'none', margin: 0, padding: 0 }}>
-          {sourceItems.map((sourceId) => (
-            <li
-              key={sourceId}
-              style={{
-                background: 'var(--fleet-panel-muted)',
-                border: '1px solid var(--fleet-border)',
-                borderRadius: '0.75rem',
-                padding: '1rem',
-              }}
+      {wikiPages.length > 0 ? (
+        <div className="fleet-stack" style={{ gap: '0.35rem' }}>
+          {wikiPages.map((page) => (
+            <Link
+              key={page.slug}
+              href={`/projects/${slug}/wiki/${page.slug}`}
+              className="kb-page-item"
             >
-              <h3 style={{ margin: 0 }}>{sourceId}</h3>
-              <p style={{ color: 'var(--fleet-text-muted)' }}>
-                Source ingestion detail will be attached in a later task.
-              </p>
-            </li>
+              <span className="kb-page-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+              </span>
+              <span className="kb-page-title">{page.title}</span>
+              <span className="fleet-badge fleet-badge-active" style={{ fontSize: '0.6rem' }}>{page.type}</span>
+              {page.sourceUrl && (
+                <span className="fleet-caption" style={{ flexShrink: 0 }}>
+                  {(() => { try { return new URL(page.sourceUrl).hostname; } catch { return ''; } })()}
+                </span>
+              )}
+            </Link>
           ))}
-        </ul>
+        </div>
       ) : (
-        <p style={{ color: 'var(--fleet-text-muted)' }}>No sources linked yet.</p>
+        <p className="fleet-caption">No sources linked yet. Paste a URL in the war room to capture research.</p>
       )}
     </article>
   );

@@ -24,8 +24,6 @@ export const projectSchema = z
     sourceIds: stringArraySchema,
     artifactIds: stringArraySchema,
     sessionIds: stringArraySchema,
-    emailThreadIds: stringArraySchema,
-    calendarEventIds: stringArraySchema,
     createdAt: isoDateTimeSchema,
     updatedAt: isoDateTimeSchema,
   })

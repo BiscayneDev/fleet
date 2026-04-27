@@ -15,17 +15,15 @@ const validProject = {
   sourceIds: ['src_1'],
   artifactIds: ['art_1'],
   sessionIds: ['sess_1'],
-  emailThreadIds: ['thread_1'],
-  calendarEventIds: ['event_1'],
   createdAt: '2026-04-11T00:00:00.000Z',
   updatedAt: '2026-04-11T01:00:00.000Z',
 };
 
 const validSource = {
-  type: 'email',
+  type: 'link',
   title: 'Inbox note',
   body: 'Important details',
-  origin: 'gmail',
+  origin: 'web',
   projectSlugs: ['alpha-launch'],
   ingestionStatus: 'processed',
   createdAt: '2026-04-11T00:00:00.000Z',

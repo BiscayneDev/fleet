@@ -19,8 +19,6 @@ function makeProject(overrides: Partial<Project>): Project {
     sourceIds: [],
     artifactIds: [],
     sessionIds: [],
-    emailThreadIds: [],
-    calendarEventIds: [],
     createdAt: now,
     updatedAt: now,
     ...overrides,

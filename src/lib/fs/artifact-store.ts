@@ -104,6 +104,35 @@ export async function listArtifacts(projectSlug: string): Promise<Artifact[]> {
   }
 }
 
+export async function updateArtifactBody(
+  projectSlug: string,
+  artifactSlug: string,
+  body: string,
+): Promise<Artifact | null> {
+  const existing = await getArtifact(projectSlug, artifactSlug);
+  if (!existing) return null;
+
+  const updated: Artifact = {
+    ...existing,
+    body,
+    updatedAt: new Date().toISOString(),
+  };
+
+  const frontmatter: Record<string, unknown> = {
+    slug: updated.slug,
+    title: updated.title,
+    type: updated.type,
+    sourcePageSlugs: updated.sourcePageSlugs,
+    createdAt: updated.createdAt,
+    updatedAt: updated.updatedAt,
+  };
+
+  const markdown = stringifyMarkdownFile(frontmatter, updated.body);
+  await writeFile(getArtifactPath(projectSlug, artifactSlug), markdown, 'utf8');
+
+  return updated;
+}
+
 export async function getArtifact(
   projectSlug: string,
   artifactSlug: string,

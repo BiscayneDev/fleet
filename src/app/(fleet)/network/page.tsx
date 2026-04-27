@@ -15,20 +15,17 @@ export default async function NetworkPage() {
 
   return (
     <section className="fleet-stack">
-      <header className="fleet-panel fleet-stack">
-        <p className="fleet-eyebrow">Network Intelligence</p>
-        <h1 style={{ margin: 0 }}>Your Network</h1>
-        <p style={{ color: 'var(--fleet-text-muted)', margin: 0, fontSize: '0.85rem' }}>
+      <header className="project-header">
+        <h1 className="project-header-title">Network</h1>
+        <p className="project-header-summary">
           Import your professional network and let Fleet find GTM opportunities hiding in your connections.
         </p>
       </header>
 
-      {/* Import section */}
       <ImportDropzone />
 
       {hasConnections && (
         <>
-          {/* Stats */}
           <NetworkStats
             total={stats.total}
             twitter={stats.twitter}
@@ -36,37 +33,23 @@ export default async function NetworkPage() {
             topCompanies={stats.topCompanies}
           />
 
-          {/* Analyze */}
           <article className="fleet-panel">
             <AnalyzeButton />
           </article>
 
-          {/* Import history */}
           {imports.length > 0 && (
             <article className="fleet-panel fleet-stack">
-              <h2 style={{ margin: 0, fontSize: '0.85rem', color: 'var(--fleet-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Import History
-              </h2>
-              <div style={{ display: 'grid', gap: '0.35rem' }}>
+              <h2 className="fleet-eyebrow">Import History</h2>
+              <div className="fleet-stack" style={{ gap: '0.25rem' }}>
                 {imports.map((imp) => (
-                  <div
-                    key={imp.id}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      fontSize: '0.8rem',
-                      padding: '0.4rem 0',
-                      borderBottom: '1px solid var(--fleet-border)',
-                    }}
-                  >
+                  <div key={imp.id} className="import-history-row">
                     <span>
-                      <span className={`connection-platform-badge connection-platform-${imp.platform}`} style={{ marginRight: '0.5rem' }}>
+                      <span className={`connection-platform-badge connection-platform-${imp.platform}`}>
                         {imp.platform === 'linkedin' ? 'LinkedIn' : 'Twitter'}
                       </span>
-                      {imp.connectionCount} connections ({imp.newCount} new)
+                      <span className="fleet-body"> {imp.connectionCount} connections ({imp.newCount} new)</span>
                     </span>
-                    <span style={{ color: 'var(--fleet-text-muted)', fontSize: '0.75rem' }}>
+                    <span className="fleet-caption">
                       {new Date(imp.importedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
@@ -75,11 +58,8 @@ export default async function NetworkPage() {
             </article>
           )}
 
-          {/* Connection list */}
           <article className="fleet-panel fleet-stack">
-            <h2 style={{ margin: 0, fontSize: '0.85rem', color: 'var(--fleet-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Connections ({connections.length})
-            </h2>
+            <h2 className="fleet-eyebrow">Connections ({connections.length})</h2>
             <div className="connection-grid">
               {connections.map((conn) => (
                 <ConnectionCard key={conn.id} connection={conn} />
@@ -90,12 +70,12 @@ export default async function NetworkPage() {
       )}
 
       {!hasConnections && (
-        <article className="fleet-panel" style={{ padding: '2rem', textAlign: 'center' }}>
-          <h2 style={{ margin: '0 0 0.5rem', fontSize: '1rem' }}>How to export your network</h2>
-          <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr', maxWidth: '600px', margin: '1rem auto 0', textAlign: 'left' }}>
-            <div style={{ background: 'var(--fleet-bg)', borderRadius: '0.75rem', padding: '1rem', border: '1px solid var(--fleet-border)' }}>
-              <h3 style={{ margin: '0 0 0.35rem', fontSize: '0.85rem', color: '#0077b5' }}>LinkedIn</h3>
-              <ol style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.78rem', color: 'var(--fleet-text-muted)', display: 'grid', gap: '0.2rem' }}>
+        <article className="fleet-panel" style={{ textAlign: 'center', padding: '2rem' }}>
+          <h2 className="fleet-heading-sm" style={{ marginBottom: '0.75rem' }}>How to export your network</h2>
+          <div className="export-instructions">
+            <div className="export-card">
+              <h3 className="export-card-title" style={{ color: '#0077b5' }}>LinkedIn</h3>
+              <ol className="export-card-steps">
                 <li>Settings &amp; Privacy</li>
                 <li>Data Privacy</li>
                 <li>Get a copy of your data</li>
@@ -103,9 +83,9 @@ export default async function NetworkPage() {
                 <li>Download the CSV</li>
               </ol>
             </div>
-            <div style={{ background: 'var(--fleet-bg)', borderRadius: '0.75rem', padding: '1rem', border: '1px solid var(--fleet-border)' }}>
-              <h3 style={{ margin: '0 0 0.35rem', fontSize: '0.85rem', color: '#1d9bf0' }}>Twitter / X</h3>
-              <ol style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.78rem', color: 'var(--fleet-text-muted)', display: 'grid', gap: '0.2rem' }}>
+            <div className="export-card">
+              <h3 className="export-card-title" style={{ color: '#1d9bf0' }}>Twitter / X</h3>
+              <ol className="export-card-steps">
                 <li>Settings &amp; Privacy</li>
                 <li>Your Account</li>
                 <li>Download an archive</li>

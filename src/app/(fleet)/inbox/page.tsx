@@ -7,16 +7,19 @@ export default async function InboxPage() {
 
   return (
     <div className="fleet-stack">
+      <header className="project-header">
+        <h1 className="project-header-title">Inbox</h1>
+        <p className="project-header-summary">
+          Drop links and notes here for later triage and ingestion into Fleet.
+        </p>
+      </header>
+
       <section className="fleet-panel">
-        <p className="fleet-eyebrow">Inbox</p>
-        <h1>Capture links and notes</h1>
-        <p>Drop items here for later triage and ingestion into Fleet.</p>
         <CaptureForm />
       </section>
 
-      <section className="fleet-panel">
-        <p className="fleet-eyebrow">Queue</p>
-        <h2>Inbox items</h2>
+      <section className="fleet-panel fleet-stack">
+        <h2 className="fleet-heading-sm">Queue</h2>
         <InboxList items={items} />
       </section>
     </div>

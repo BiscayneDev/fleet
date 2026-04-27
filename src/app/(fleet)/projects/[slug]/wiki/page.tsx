@@ -18,7 +18,7 @@ export default async function ProjectWikiPage({ params }: ProjectRouteProps) {
     <article className="fleet-panel fleet-stack">
       <h2>Linked pages</h2>
       <p style={{ color: 'var(--fleet-text-muted)' }}>Derived knowledge surfaces for {project.title}.</p>
-      <WikiPageList pages={pages} />
+      <WikiPageList pages={pages} projectSlug={slug} />
     </article>
   );
 }

@@ -4,8 +4,6 @@ export type ProjectStatus = (typeof projectStatuses)[number];
 
 export const sourceTypes = [
   'link',
-  'email',
-  'calendar',
   'note',
   'file',
   'pdf',
@@ -59,8 +57,6 @@ export interface Project {
   sourceIds: string[];
   artifactIds: string[];
   sessionIds: string[];
-  emailThreadIds: string[];
-  calendarEventIds: string[];
   createdAt: string;
   updatedAt: string;
 }

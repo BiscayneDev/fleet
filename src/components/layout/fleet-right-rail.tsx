@@ -25,81 +25,38 @@ export function FleetRightRail() {
 
   return (
     <aside className="fleet-right-rail">
-      <div style={{ display: 'grid', gap: '1rem' }}>
-        <div>
-          <p style={{
-            fontSize: '0.65rem',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            color: 'var(--fleet-text-muted)',
-            margin: '0 0 0.5rem',
-          }}>
-            Quick Stats
-          </p>
-          {stats && (
-            <div style={{ display: 'grid', gap: '0.35rem' }}>
-              <Link href="/projects" style={{ textDecoration: 'none', color: 'inherit' }}>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  padding: '0.4rem 0',
-                  fontSize: '0.8rem',
-                  borderBottom: '1px solid var(--fleet-border)',
-                }}>
-                  <span style={{ color: 'var(--fleet-text-muted)' }}>Projects</span>
-                  <span style={{ fontWeight: 600 }}>{stats.projects}</span>
-                </div>
+      <div className="rail-sections">
+        <div className="rail-section">
+          <p className="rail-section-title">Quick Stats</p>
+          {stats ? (
+            <div className="rail-stat-list">
+              <Link href="/projects" className="rail-stat-row">
+                <span className="rail-stat-label">Projects</span>
+                <span className="rail-stat-value">{stats.projects}</span>
               </Link>
-              <Link href="/network" style={{ textDecoration: 'none', color: 'inherit' }}>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  padding: '0.4rem 0',
-                  fontSize: '0.8rem',
-                  borderBottom: '1px solid var(--fleet-border)',
-                }}>
-                  <span style={{ color: 'var(--fleet-text-muted)' }}>Connections</span>
-                  <span style={{ fontWeight: 600 }}>{stats.connections}</span>
-                </div>
+              <Link href="/network" className="rail-stat-row">
+                <span className="rail-stat-label">Connections</span>
+                <span className="rail-stat-value">{stats.connections}</span>
               </Link>
+            </div>
+          ) : (
+            <div className="rail-stat-list">
+              <div className="rail-skeleton" />
+              <div className="rail-skeleton" />
             </div>
           )}
         </div>
 
-        <div>
-          <p style={{
-            fontSize: '0.65rem',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            color: 'var(--fleet-text-muted)',
-            margin: '0 0 0.5rem',
-          }}>
-            Quick Actions
-          </p>
-          <div style={{ display: 'grid', gap: '0.3rem' }}>
-            <Link
-              href="/projects"
-              style={{
-                fontSize: '0.78rem',
-                color: 'var(--fleet-accent)',
-                textDecoration: 'none',
-                padding: '0.3rem 0',
-              }}
-            >
-              + New Project
+        <div className="rail-section">
+          <p className="rail-section-title">Quick Actions</p>
+          <div className="rail-action-list">
+            <Link href="/projects" className="rail-action">
+              <span className="rail-action-icon">+</span>
+              New Project
             </Link>
-            <Link
-              href="/network"
-              style={{
-                fontSize: '0.78rem',
-                color: 'var(--fleet-accent)',
-                textDecoration: 'none',
-                padding: '0.3rem 0',
-              }}
-            >
-              + Import Network
+            <Link href="/network" className="rail-action">
+              <span className="rail-action-icon">+</span>
+              Import Network
             </Link>
           </div>
         </div>

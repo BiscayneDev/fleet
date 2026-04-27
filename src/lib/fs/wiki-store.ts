@@ -123,6 +123,57 @@ export async function listWikiPages(projectSlug: string): Promise<WikiPage[]> {
   }
 }
 
+export async function updateWikiPageBody(
+  projectSlug: string,
+  pageSlug: string,
+  body: string,
+): Promise<WikiPage | null> {
+  const existing = await getWikiPage(projectSlug, pageSlug);
+  if (!existing) return null;
+
+  const updated: WikiPage = {
+    ...existing,
+    body,
+    updatedAt: new Date().toISOString(),
+  };
+
+  const frontmatter: Record<string, unknown> = {
+    slug: updated.slug,
+    title: updated.title,
+    type: updated.type,
+    summary: updated.summary,
+    concepts: updated.concepts,
+    competitors: updated.competitors,
+    risks: updated.risks,
+    suggestedActions: updated.suggestedActions,
+    createdAt: updated.createdAt,
+    updatedAt: updated.updatedAt,
+  };
+
+  if (updated.sourceUrl !== undefined) {
+    frontmatter.sourceUrl = updated.sourceUrl;
+  }
+
+  const markdown = stringifyMarkdownFile(frontmatter, updated.body);
+  await writeFile(getWikiPagePath(projectSlug, pageSlug), markdown, 'utf8');
+
+  return updated;
+}
+
+export async function deleteWikiPage(
+  projectSlug: string,
+  pageSlug: string,
+): Promise<boolean> {
+  const { unlink } = await import('node:fs/promises');
+  const pagePath = getWikiPagePath(projectSlug, pageSlug);
+  try {
+    await unlink(pagePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function getWikiPage(
   projectSlug: string,
   pageSlug: string,

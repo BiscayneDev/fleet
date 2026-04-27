@@ -79,8 +79,6 @@ function frontmatterToProject(slug: string, frontmatter: Record<string, unknown>
     sourceIds: Array.isArray(frontmatter.sourceIds) ? frontmatter.sourceIds : [],
     artifactIds: Array.isArray(frontmatter.artifactIds) ? frontmatter.artifactIds : [],
     sessionIds: Array.isArray(frontmatter.sessionIds) ? frontmatter.sessionIds : [],
-    emailThreadIds: Array.isArray(frontmatter.emailThreadIds) ? frontmatter.emailThreadIds : [],
-    calendarEventIds: Array.isArray(frontmatter.calendarEventIds) ? frontmatter.calendarEventIds : [],
     createdAt: frontmatter.createdAt,
     updatedAt: frontmatter.updatedAt,
   });
@@ -107,8 +105,6 @@ async function writeProjectBrief(project: Project): Promise<void> {
         sourceIds: project.sourceIds,
         artifactIds: project.artifactIds,
         sessionIds: project.sessionIds,
-        emailThreadIds: project.emailThreadIds,
-        calendarEventIds: project.calendarEventIds,
         createdAt: project.createdAt,
         updatedAt: project.updatedAt,
       },
@@ -144,8 +140,6 @@ export async function createProject(input: CreateProjectInput): Promise<Project>
     sourceIds: [],
     artifactIds: [],
     sessionIds: [],
-    emailThreadIds: [],
-    calendarEventIds: [],
     createdAt: now,
     updatedAt: now,
   };

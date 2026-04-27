@@ -45,15 +45,11 @@ export function CaptureForm({ preselectedProject }: { preselectedProject?: strin
 
     try {
       if (isUrl && selectedProject) {
-        // URL + project → enrich
         setStatus('Researching link…');
         const response = await fetch('/api/ingest/link', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            url: content.trim(),
-            projectSlug: selectedProject,
-          }),
+          body: JSON.stringify({ url: content.trim(), projectSlug: selectedProject }),
         });
 
         if (!response.ok) {
@@ -68,13 +64,8 @@ export function CaptureForm({ preselectedProject }: { preselectedProject?: strin
         setContent('');
         setSelectedProject('');
         router.refresh();
-
-        // Auto-redirect to project wiki after a beat
-        setTimeout(() => {
-          router.push(`/projects/${selectedProject}/wiki`);
-        }, 1200);
+        setTimeout(() => router.push(`/projects/${selectedProject}/wiki`), 1200);
       } else {
-        // Note or URL without project → save to inbox
         setStatus('Saving…');
         const response = await fetch('/api/inbox', {
           method: 'POST',
@@ -100,81 +91,51 @@ export function CaptureForm({ preselectedProject }: { preselectedProject?: strin
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '0.75rem', marginTop: '1rem' }}>
-      <label style={{ display: 'grid', gap: '0.5rem' }}>
+    <form onSubmit={handleSubmit} className="capture-form">
+      <label className="capture-form-label">
         <span className="fleet-eyebrow">Quick capture</span>
         <textarea
+          className="capture-textarea"
           name="content"
           placeholder="Paste a link or jot down a note…"
-          rows={4}
+          rows={3}
           value={content}
           onChange={(e) => {
             setContent(e.target.value);
             setStatus(null);
             setError(null);
           }}
-          style={{
-            background: 'var(--fleet-panel-muted)',
-            border: '1px solid var(--fleet-border)',
-            borderRadius: '0.75rem',
-            color: 'var(--fleet-text)',
-            font: 'inherit',
-            padding: '0.75rem 1rem',
-            resize: 'vertical',
-          }}
         />
       </label>
 
-      {/* Project picker — only visible when a URL is detected and no project preselected */}
       {isUrl && !preselectedProject && projects.length > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--fleet-text-muted)', whiteSpace: 'nowrap' }}>
-            Research into:
-          </span>
+        <div className="capture-project-picker">
+          <span className="fleet-caption">Research into:</span>
           <select
+            className="capture-select"
             value={selectedProject}
             onChange={(e) => setSelectedProject(e.target.value)}
-            style={{
-              flex: 1,
-              appearance: 'none',
-              backgroundColor: 'var(--fleet-panel-muted)',
-              border: '1px solid var(--fleet-border)',
-              borderRadius: '0.5rem',
-              color: 'var(--fleet-text)',
-              fontSize: '0.8rem',
-              padding: '0.4rem 0.6rem',
-            }}
           >
             <option value="">— save to inbox only —</option>
             {projects.map((p) => (
-              <option key={p.slug} value={p.slug}>
-                {p.title}
-              </option>
+              <option key={p.slug} value={p.slug}>{p.title}</option>
             ))}
           </select>
         </div>
       )}
 
-      {error && (
-        <p style={{ color: '#fca5a5', margin: 0, fontSize: '0.8rem' }}>{error}</p>
-      )}
-      {status && (
-        <p style={{ color: 'var(--fleet-accent)', margin: 0, fontSize: '0.8rem' }}>{status}</p>
-      )}
+      {error && <p className="capture-error">{error}</p>}
+      {status && <p className="capture-status">{status}</p>}
 
       <button
-        className="fleet-button"
+        className="fleet-button fleet-button-primary"
         disabled={isSubmitting || content.trim().length === 0}
         type="submit"
       >
         {isSubmitting
           ? status ?? 'Saving…'
           : isUrl
-            ? preselectedProject
-              ? 'Research & enrich'
-              : selectedProject
-                ? 'Research & enrich'
-                : 'Save link to inbox'
+            ? (preselectedProject || selectedProject) ? 'Research & enrich' : 'Save link to inbox'
             : 'Save to inbox'}
       </button>
     </form>

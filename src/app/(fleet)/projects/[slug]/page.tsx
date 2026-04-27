@@ -1,8 +1,9 @@
+import Link from 'next/link';
+
 import { listWikiPages } from '@/lib/fs/wiki-store';
 import { listArtifacts } from '@/lib/fs/artifact-store';
-import { CaptureForm } from '@/components/inbox/capture-form';
 import { ChatPanel } from '@/components/chat/chat-panel';
-import { BuildGtmButton } from '@/components/gtm/build-gtm-button';
+import { CompetitiveIntel } from '@/components/competitive/competitive-intel';
 import { getProjectOrNotFound, type ProjectRouteProps } from './project-page';
 
 function formatDate(dateStr: string): string {
@@ -45,8 +46,11 @@ export default async function ProjectWarRoom({ params }: ProjectRouteProps) {
 
   return (
     <div className="war-room">
-      {/* Left: Chat agent */}
+      {/* Main: Chat + competitive intel */}
       <div className="war-room-chat">
+        <div className="war-room-quick-actions">
+          <CompetitiveIntel projectSlug={slug} />
+        </div>
         <ChatPanel
           projectSlug={slug}
           projectTitle={project.title}
@@ -54,68 +58,53 @@ export default async function ProjectWarRoom({ params }: ProjectRouteProps) {
         />
       </div>
 
-      {/* Right: Context sidebar */}
+      {/* Right: Context sidebar — compact, scrollable */}
       <aside className="war-room-context">
-        {/* Quick capture */}
-        <div className="war-room-section">
-          <CaptureForm preselectedProject={slug} />
-        </div>
-
-        {/* Stats */}
-        <div className="war-room-stats">
-          <Stat label="Status" value={project.status} accent={project.status === 'active' ? '#22c55e' : undefined} />
-          <Stat label="Sources" value={String(wikiPages.length)} />
-          <Stat label="Artifacts" value={String(artifacts.length)} />
-        </div>
-
-        {/* Build GTM */}
-        <BuildGtmButton projectSlug={slug} hasArtifacts={artifacts.length > 0} />
-
         {/* Artifacts */}
         {artifacts.length > 0 && (
           <div className="war-room-section">
-            <h3 className="war-room-section-title">Artifacts</h3>
-            <div style={{ display: 'grid', gap: '0.4rem' }}>
-              {artifacts.map((a) => (
-                <div key={a.slug} className="war-room-item">
+            <div className="war-room-section-header">
+              <h3 className="war-room-section-title">Artifacts</h3>
+              <Link href={`/projects/${slug}/artifacts`} className="war-room-view-link">View all</Link>
+            </div>
+            <div className="war-room-item-list">
+              {artifacts.slice(0, 5).map((a) => (
+                <Link
+                  key={a.slug}
+                  href={`/projects/${slug}/artifacts/${a.slug}`}
+                  className="war-room-item"
+                >
                   <span className="war-room-item-badge">{TYPE_LABELS[a.type] ?? a.type}</span>
                   <span className="war-room-item-title">{a.title}</span>
                   <span className="war-room-item-date">{formatDate(a.createdAt)}</span>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
         )}
 
-        {/* Captured sources */}
+        {/* Sources */}
         {wikiPages.length > 0 && (
           <div className="war-room-section">
-            <h3 className="war-room-section-title">Captured Sources ({wikiPages.length})</h3>
-            <div style={{ display: 'grid', gap: '0.4rem' }}>
-              {wikiPages.slice(0, 10).map((page) => (
-                <a
+            <div className="war-room-section-header">
+              <h3 className="war-room-section-title">Sources ({wikiPages.length})</h3>
+              <Link href={`/projects/${slug}/wiki`} className="war-room-view-link">View all</Link>
+            </div>
+            <div className="war-room-item-list">
+              {wikiPages.slice(0, 6).map((page) => (
+                <Link
                   key={page.slug}
-                  href={page.sourceUrl || '#'}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={`/projects/${slug}/wiki/${page.slug}`}
                   className="war-room-source"
                 >
-                  <strong style={{ fontSize: '0.8rem', lineHeight: 1.3 }}>{page.title}</strong>
-                  <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--fleet-text-muted)', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                    {page.summary}
-                  </p>
+                  <strong style={{ fontSize: '0.78rem', lineHeight: 1.3 }}>{page.title}</strong>
                   {page.sourceUrl && (
-                    <span style={{ fontSize: '0.65rem', color: 'var(--fleet-accent)' }}>
-                      {(() => { try { return new URL(page.sourceUrl).hostname; } catch { return page.sourceUrl; } })()}
+                    <span style={{ fontSize: '0.62rem', color: 'var(--fleet-accent)' }}>
+                      {(() => { try { return new URL(page.sourceUrl).hostname; } catch { return ''; } })()}
                     </span>
                   )}
-                </a>
+                </Link>
               ))}
-              {wikiPages.length > 10 && (
-                <p style={{ fontSize: '0.75rem', color: 'var(--fleet-text-muted)', margin: '0.25rem 0 0' }}>
-                  +{wikiPages.length - 10} more sources
-                </p>
-              )}
             </div>
           </div>
         )}
@@ -124,31 +113,12 @@ export default async function ProjectWarRoom({ params }: ProjectRouteProps) {
         {project.goals.length > 0 && (
           <div className="war-room-section">
             <h3 className="war-room-section-title">Goals</h3>
-            <ul style={{ margin: 0, paddingLeft: '1rem', fontSize: '0.8rem', display: 'grid', gap: '0.25rem' }}>
+            <ul className="war-room-list">
               {project.goals.map((g) => <li key={g}>{g}</li>)}
             </ul>
           </div>
         )}
-
-        {/* Outcomes */}
-        {project.desiredOutcomes.length > 0 && (
-          <div className="war-room-section">
-            <h3 className="war-room-section-title">Desired Outcomes</h3>
-            <ul style={{ margin: 0, paddingLeft: '1rem', fontSize: '0.8rem', display: 'grid', gap: '0.25rem' }}>
-              {project.desiredOutcomes.map((o) => <li key={o}>{o}</li>)}
-            </ul>
-          </div>
-        )}
       </aside>
-    </div>
-  );
-}
-
-function Stat({ label, value, accent }: { label: string; value: string; accent?: string }) {
-  return (
-    <div className="war-room-stat">
-      <p style={{ margin: 0, fontSize: '0.6rem', color: 'var(--fleet-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</p>
-      <p style={{ margin: '0.1rem 0 0', fontWeight: 600, textTransform: 'capitalize', fontSize: '0.85rem', color: accent }}>{value}</p>
     </div>
   );
 }

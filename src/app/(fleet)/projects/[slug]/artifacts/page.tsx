@@ -1,5 +1,6 @@
-import { listArtifacts } from '@/lib/fs/artifact-store';
+import Link from 'next/link';
 
+import { listArtifacts } from '@/lib/fs/artifact-store';
 import { getProjectOrNotFound, type ProjectRouteProps } from '../project-page';
 
 const TYPE_LABELS: Record<string, string> = {
@@ -24,64 +25,55 @@ export default async function ProjectArtifactsPage({ params }: ProjectRouteProps
 
   return (
     <article className="fleet-panel fleet-stack">
-      <h2 style={{ margin: 0 }}>Artifacts</h2>
-      <p style={{ color: 'var(--fleet-text-muted)', margin: 0, fontSize: '0.85rem' }}>
+      <h2 className="fleet-heading">Artifacts</h2>
+      <p className="fleet-caption">
         GTM deliverables generated for {project.title}.
       </p>
 
       {artifacts.length > 0 ? (
-        <div style={{ display: 'grid', gap: '0.75rem' }}>
+        <div style={{ display: 'grid', gap: '0.5rem' }}>
           {artifacts.map((artifact) => (
-            <article
+            <Link
               key={artifact.slug}
+              href={`/projects/${slug}/artifacts/${artifact.slug}`}
+              className="fleet-panel-interactive"
               style={{
+                display: 'grid',
+                gap: '0.4rem',
                 background: 'var(--fleet-bg)',
                 border: '1px solid var(--fleet-border)',
                 borderRadius: '0.75rem',
-                padding: '1rem',
-                display: 'grid',
-                gap: '0.5rem',
+                padding: '0.85rem 1rem',
+                textDecoration: 'none',
+                color: 'inherit',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <span style={{
-                    fontSize: '0.6rem',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                    color: 'var(--fleet-accent)',
-                  }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span className="fleet-badge fleet-badge-complete">
                     {TYPE_LABELS[artifact.type] ?? artifact.type}
                   </span>
-                  <h3 style={{ margin: '0.15rem 0 0', fontSize: '0.9rem' }}>{artifact.title}</h3>
+                  <h3 style={{ margin: 0, fontSize: '0.88rem', fontWeight: 600 }}>{artifact.title}</h3>
                 </div>
-                <span style={{ fontSize: '0.7rem', color: 'var(--fleet-text-muted)', whiteSpace: 'nowrap' }}>
-                  {new Date(artifact.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span className="fleet-caption">
+                    {new Date(artifact.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  </span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.3 }}>
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
               </div>
-              <div style={{ fontSize: '0.83rem', lineHeight: 1.6, color: 'var(--fleet-text)' }}>
-                {artifact.body.split('\n').slice(0, 8).map((line, i) => {
-                  if (line.startsWith('## ')) {
-                    return <h4 key={i} style={{ fontSize: '0.8rem', margin: '0.4rem 0 0.2rem', color: 'var(--fleet-accent)' }}>{line.slice(3)}</h4>;
-                  }
-                  if (line.startsWith('- ')) {
-                    return <li key={i} style={{ marginLeft: '0.75rem', fontSize: '0.8rem' }}>{line.slice(2)}</li>;
-                  }
-                  if (line.trim() === '') return null;
-                  return <p key={i} style={{ margin: '0.1rem 0', fontSize: '0.8rem' }}>{line}</p>;
-                })}
-                {artifact.body.split('\n').length > 8 && (
-                  <p style={{ color: 'var(--fleet-text-muted)', fontSize: '0.75rem', margin: '0.25rem 0 0' }}>...</p>
-                )}
-              </div>
-            </article>
+              <p className="fleet-body" style={{ margin: 0, color: 'var(--fleet-text-muted)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                {artifact.body.split('\n').filter((l) => l.trim() && !l.startsWith('#')).slice(0, 2).join(' ')}
+              </p>
+            </Link>
           ))}
         </div>
       ) : (
-        <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--fleet-text-muted)' }}>
-          <p style={{ margin: 0, fontSize: '0.85rem' }}>No artifacts yet.</p>
-          <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem' }}>
+        <div style={{ padding: '2rem', textAlign: 'center' }}>
+          <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--fleet-text-muted)' }}>No artifacts yet.</p>
+          <p className="fleet-caption" style={{ margin: '0.25rem 0 0' }}>
             Chat with the Fleet agent in the Overview tab to generate GTM deliverables.
           </p>
         </div>

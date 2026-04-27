@@ -14,23 +14,14 @@ export default async function ProjectLayout({
 
   return (
     <section className="fleet-stack">
-      <header className="fleet-panel fleet-stack">
-        <div
-          style={{
-            alignItems: 'flex-start',
-            display: 'flex',
-            gap: '1rem',
-            justifyContent: 'space-between',
-          }}
-        >
+      <header className="project-header">
+        <div className="project-header-top">
           <div>
-            <p className="fleet-eyebrow">Project workspace</p>
-            <h1 style={{ margin: 0 }}>{project.title}</h1>
+            <h1 className="project-header-title">{project.title}</h1>
+            <p className="project-header-summary">{project.summary}</p>
           </div>
           <ProjectActions slug={project.slug} currentStatus={project.status} />
         </div>
-
-        <p>{project.summary}</p>
         <ProjectTabs slug={project.slug} />
       </header>
 
