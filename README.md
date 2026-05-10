@@ -4,12 +4,22 @@ Local-first GTM intelligence for founders. Capture research links and notes, let
 
 Everything runs on your own machine — projects, wikis, and network data live on disk under `./data/`. There's no database, no hosted backend, and no account to create.
 
+## Prerequisites
+
+You need [Node.js](https://nodejs.org) 20.9 or newer and the `git` command line. Check what you have:
+
+```bash
+node --version   # should print v20.9.0 or higher
+git --version
+```
+
+If `node` is missing or older, install the latest LTS from <https://nodejs.org> (macOS users can also `brew install node`). npm comes bundled with Node.
+
 ## Quick start
 
 ```bash
 git clone https://github.com/biscaynedev/fleet.git
 cd fleet
-nvm use            # optional, picks up the Node version from .nvmrc
 npm install
 npm run dev
 ```
@@ -17,6 +27,8 @@ npm run dev
 Open <http://localhost:3000>.
 
 That's it. With no `.env.local` file the app uses a built-in mock LLM adapter so you can click through the full UI — create a project, capture a link, watch it land in the wiki — without configuring any API keys.
+
+> **Using nvm?** A `.nvmrc` is included, so `nvm use` from the repo root will pick the right Node version. Skip it if you don't use nvm.
 
 ## Enable real LLM enrichment
 
@@ -87,13 +99,6 @@ tests/
 └── e2e/                 # Playwright
 docs/                    # Implementation plans
 ```
-
-## Requirements
-
-- Node.js **20.9+** (Next.js 16 baseline)
-- npm 10+
-
-A `.nvmrc` is included — `nvm use` from the repo root picks the right version.
 
 ## License
 
