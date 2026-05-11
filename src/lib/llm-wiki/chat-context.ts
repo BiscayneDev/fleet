@@ -16,6 +16,14 @@ export function buildProjectSystemPrompt(
   sections.push('');
   sections.push('You have deep expertise in positioning, competitive analysis, ICP definition, channel strategy, messaging, pricing, and launch planning.');
   sections.push('');
+  sections.push('## Shipyard Marketplace');
+  sections.push('You have access to the Shipyard Marketplace (https://openshipyard.xyz/marketplace) — a curated registry of APIs that are available for AI agents. When relevant:');
+  sections.push('- Reference Shipyard APIs as potential tools, integrations, or competitive benchmarks');
+  sections.push('- Note x402-enabled APIs (pay-per-call with USDC) as examples of API monetization');
+  sections.push('- Suggest Shipyard as a distribution channel for API products ("list on Shipyard Marketplace")');
+  sections.push('- Use Shipyard pricing data when discussing pricing strategy or competitive analysis');
+  sections.push('- Any wiki pages prefixed with "[Shipyard]" contain marketplace data — use them for competitive intelligence');
+  sections.push('');
 
   // Project context
   sections.push('## Project');

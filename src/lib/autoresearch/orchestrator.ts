@@ -8,6 +8,10 @@ import { scrapeUrl } from '../llm-wiki/scraper';
 import { enrichContent } from '../llm-wiki/real';
 import { webSearch } from './search';
 import { generateResearchQueries } from './queries';
+import {
+  searchMarketplace,
+  formatListingForResearch,
+} from '../shipyard/client';
 
 import type { WikiPage } from '../fs/wiki-store';
 
@@ -127,6 +131,52 @@ Be specific. Reference actual companies, communities, URLs, and data points. Fla
   return result.text;
 }
 
+async function searchShipyardForProject(
+  projectTitle: string,
+  projectSummary: string,
+  projectSlug: string,
+): Promise<WikiPage[]> {
+  const pages: WikiPage[] = [];
+
+  try {
+    // Search marketplace with project title and summary keywords
+    const keywords = projectTitle.split(/\s+/).slice(0, 3).join(' ');
+    const result = await searchMarketplace(keywords, 10);
+
+    if (result.listings.length === 0) {
+      return pages;
+    }
+
+    for (const listing of result.listings) {
+      const slug = `shipyard-${listing.slug}`
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 80);
+
+      const body = formatListingForResearch(listing);
+
+      try {
+        const written = await writeWikiPage(projectSlug, {
+          slug,
+          title: `[Shipyard] ${listing.name}`,
+          type: 'source',
+          summary: listing.short_description ?? `${listing.name} — API on Shipyard Marketplace`,
+          body: `Source: Shipyard Marketplace\n\n${body}`,
+          sourceUrl: `https://openshipyard.xyz/marketplace/${listing.slug}`,
+        });
+        pages.push(written);
+      } catch {
+        // Skip duplicates
+      }
+    }
+  } catch {
+    // Shipyard search failure should not block research
+  }
+
+  return pages;
+}
+
 export async function runAutoresearch(
   projectSlug: string,
 ): Promise<AutoresearchResult> {
@@ -172,7 +222,15 @@ export async function runAutoresearch(
     }
   }
 
-  // Step 4: Synthesize validation report
+  // Step 4: Search Shipyard Marketplace
+  const shipyardPages = await searchShipyardForProject(
+    project.title,
+    project.summary,
+    projectSlug,
+  );
+  newPages.push(...shipyardPages);
+
+  // Step 5: Synthesize validation report
   const reportBody = await synthesizeReport(project.title, queries, newPages);
 
   const report = await writeArtifact(projectSlug, {
