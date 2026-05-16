@@ -8,6 +8,7 @@ import {
   listWaitlists,
   isVaultMode,
 } from '@/lib/fs/waitlist-store';
+import { getDefaultVaultContactsDir } from '@/lib/fs/contact-loader';
 
 export default async function WaitlistsPage() {
   const waitlists = await listWaitlists();
@@ -34,6 +35,12 @@ export default async function WaitlistsPage() {
           Sync waitlist signups into your vault and match them against your
           contacts.
         </p>
+        {isVaultMode() && (
+          <p className="fleet-caption" style={{ marginTop: '0.5rem' }}>
+            Vault: <code>$FLEET_VAULT_ROOT</code> · contacts dir:{' '}
+            <code>{getDefaultVaultContactsDir()}/</code>
+          </p>
+        )}
       </header>
 
       {!isVaultMode() && (
@@ -58,7 +65,11 @@ export default async function WaitlistsPage() {
             Without it, Fleet falls back to <code>./data/waitlists/</code>{' '}
             (still works, just not vault-integrated). Add{' '}
             <code>FLEET_VAULT_ROOT=/absolute/path/to/your/vault</code> to your{' '}
-            <code>.env.local</code> and restart.
+            <code>.env.local</code> and restart. If your contact markdown
+            lives somewhere other than{' '}
+            <code>&lt;vault&gt;/contacts/</code> (e.g. Karpathy-style{' '}
+            <code>wiki/people/</code>), also set{' '}
+            <code>FLEET_VAULT_CONTACTS_DIR=wiki/people</code>.
           </p>
         </section>
       )}

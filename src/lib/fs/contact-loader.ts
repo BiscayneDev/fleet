@@ -58,12 +58,18 @@ export interface LoadContactsOptions {
   vaultContactsDir?: string;
 }
 
+export function getDefaultVaultContactsDir(): string {
+  return process.env.FLEET_VAULT_CONTACTS_DIR || 'contacts';
+}
+
 export async function loadAllContacts(
   options: LoadContactsOptions = {},
 ): Promise<ContactIndex> {
   const networkContacts = await loadNetworkContacts();
   const vaultContacts = hasVault()
-    ? await loadVaultContacts(options.vaultContactsDir ?? 'contacts')
+    ? await loadVaultContacts(
+        options.vaultContactsDir ?? getDefaultVaultContactsDir(),
+      )
     : [];
 
   const byEmail = new Map<string, UnifiedContact>();
