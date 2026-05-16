@@ -17,6 +17,10 @@ export async function register(): Promise<void> {
   const cleanup = (): void => {
     void handle.stop();
   };
-  process.once('SIGINT', cleanup);
-  process.once('SIGTERM', cleanup);
+  // Indirect process access hides this Node-only API from Next.js's
+  // edge-runtime static analyzer. The early-returns above already
+  // gate this branch to the nodejs runtime.
+  const proc = (globalThis as { process?: NodeJS.Process }).process;
+  proc?.once?.('SIGINT', cleanup);
+  proc?.once?.('SIGTERM', cleanup);
 }
