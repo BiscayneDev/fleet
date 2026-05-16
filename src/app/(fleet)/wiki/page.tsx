@@ -1,67 +1,84 @@
-import Link from 'next/link';
+import Link from 'next/link'
+import { BookOpen, FileText } from 'lucide-react'
 
-import { listProjects } from '@/lib/fs/project-store';
-import { listWikiPages } from '@/lib/fs/wiki-store';
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { EmptyState } from '@/components/empty-state/empty-state'
+import { listProjects } from '@/lib/fs/project-store'
+import { listWikiPages } from '@/lib/fs/wiki-store'
 
 export default async function GlobalWikiPage() {
-  const projects = await listProjects();
+  const projects = await listProjects()
 
   const projectsWithPages = await Promise.all(
     projects.map(async (project) => {
-      const pages = await listWikiPages(project.slug);
-      return { project, pages };
+      const pages = await listWikiPages(project.slug)
+      return { project, pages }
     }),
-  );
+  )
 
-  const allWithPages = projectsWithPages.filter((p) => p.pages.length > 0);
+  const allWithPages = projectsWithPages.filter((p) => p.pages.length > 0)
 
   return (
-    <section className="fleet-stack">
-      <header className="project-header">
-        <h1 className="project-header-title">Knowledge Base</h1>
-        <p className="project-header-summary">
+    <div className="mx-auto max-w-6xl space-y-8 px-6 py-10">
+      <header className="space-y-1.5 border-b border-border pb-6">
+        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+          Knowledge Base
+        </p>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          Knowledge Base
+        </h1>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           All captured research and derived knowledge across your projects.
         </p>
       </header>
 
       {allWithPages.length === 0 ? (
-        <div className="fleet-panel" style={{ textAlign: 'center', padding: '2rem' }}>
-          <p style={{ margin: 0, color: 'var(--fleet-text-muted)' }}>
-            No wiki pages yet. Capture links and notes in a project to build your knowledge base.
-          </p>
-        </div>
+        <EmptyState
+          icon={BookOpen}
+          title="No wiki pages yet"
+          description="Capture links or notes inside a project — Fleet's LLM enriches them into wiki pages here."
+        />
       ) : (
-        <div className="fleet-stack">
+        <div className="space-y-6">
           {allWithPages.map(({ project, pages }) => (
-            <div key={project.slug} className="fleet-panel fleet-stack">
-              <div className="home-section-header">
-                <h2 className="fleet-heading-sm">{project.title}</h2>
-                <Link href={`/projects/${project.slug}/wiki`} className="home-view-all">
+            <Card key={project.slug} className="overflow-hidden p-0">
+              <div className="flex items-center justify-between border-b border-border px-5 py-3">
+                <h2 className="text-sm font-semibold text-foreground">
+                  {project.title}
+                </h2>
+                <Link
+                  href={`/projects/${project.slug}/wiki`}
+                  className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                >
                   View all →
                 </Link>
               </div>
-              <div style={{ display: 'grid', gap: '0.35rem' }}>
+              <ul className="divide-y divide-border">
                 {pages.slice(0, 8).map((page) => (
-                  <Link
-                    key={page.slug}
-                    href={`/projects/${project.slug}/wiki/${page.slug}`}
-                    className="kb-page-item"
-                  >
-                    <span className="kb-page-icon">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                        <polyline points="14 2 14 8 20 8" />
-                      </svg>
-                    </span>
-                    <span className="kb-page-title">{page.title}</span>
-                    <span className="fleet-badge fleet-badge-active" style={{ fontSize: '0.6rem' }}>{page.type}</span>
-                  </Link>
+                  <li key={page.slug}>
+                    <Link
+                      href={`/projects/${project.slug}/wiki/${page.slug}`}
+                      className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-accent/40"
+                    >
+                      <FileText className="size-3.5 shrink-0 text-muted-foreground" />
+                      <span className="flex-1 truncate text-sm text-foreground">
+                        {page.title}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className="font-normal text-muted-foreground"
+                      >
+                        {page.type}
+                      </Badge>
+                    </Link>
+                  </li>
                 ))}
-              </div>
-            </div>
+              </ul>
+            </Card>
           ))}
         </div>
       )}
-    </section>
-  );
+    </div>
+  )
 }

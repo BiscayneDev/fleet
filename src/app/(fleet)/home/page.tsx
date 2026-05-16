@@ -1,275 +1,401 @@
-import Link from 'next/link';
+import Link from 'next/link'
+import {
+  ArrowRight,
+  Inbox,
+  Network as NetworkIcon,
+  Sparkles,
+  Users,
+  Zap,
+} from 'lucide-react'
 
-import { listProjects } from '@/lib/fs/project-store';
-import { listArtifacts } from '@/lib/fs/artifact-store';
-import { listWikiPages } from '@/lib/fs/wiki-store';
-import { getNetworkStats } from '@/lib/fs/network-store';
-import { gtmSteps } from '@/lib/gtm/steps';
-import { CaptureForm } from '@/components/inbox/capture-form';
-import { Onboarding } from '@/components/home/onboarding';
+import { Onboarding } from '@/components/home/onboarding'
+import { CaptureForm } from '@/components/inbox/capture-form'
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
+
+import { listProjects } from '@/lib/fs/project-store'
+import { listArtifacts } from '@/lib/fs/artifact-store'
+import { listWikiPages } from '@/lib/fs/wiki-store'
+import { getNetworkStats } from '@/lib/fs/network-store'
+import { gtmSteps } from '@/lib/gtm/steps'
 
 async function getProjectGtmProgress(slug: string) {
-  const artifacts = await listArtifacts(slug);
+  const artifacts = await listArtifacts(slug)
   const completed = gtmSteps.filter((step) =>
     artifacts.some((a) => a.type === step.artifactType),
-  ).length;
-  return { completed, total: gtmSteps.length, artifacts };
+  ).length
+  return { completed, total: gtmSteps.length, artifacts }
+}
+
+function getTimeOfDay(): string {
+  const hour = new Date().getHours()
+  if (hour < 12) return 'morning'
+  if (hour < 17) return 'afternoon'
+  return 'evening'
 }
 
 export default async function FleetHomePage() {
   const [projects, networkStats] = await Promise.all([
     listProjects(),
     getNetworkStats(),
-  ]);
+  ])
 
   const projectsWithGtm = await Promise.all(
     projects.map(async (project) => {
       const [gtm, wikiPages] = await Promise.all([
         getProjectGtmProgress(project.slug),
         listWikiPages(project.slug),
-      ]);
-      return { ...project, gtm, sourceCount: wikiPages.length };
+      ])
+      return { ...project, gtm, sourceCount: wikiPages.length }
     }),
-  );
+  )
 
-  const activeProjects = projectsWithGtm.filter((p) => p.status === 'active');
-  const totalArtifacts = projectsWithGtm.reduce((sum, p) => sum + p.gtm.artifacts.length, 0);
-  const totalSources = projectsWithGtm.reduce((sum, p) => sum + p.sourceCount, 0);
+  const activeProjects = projectsWithGtm.filter((p) => p.status === 'active')
+  const totalArtifacts = projectsWithGtm.reduce(
+    (sum, p) => sum + p.gtm.artifacts.length,
+    0,
+  )
+  const totalSources = projectsWithGtm.reduce(
+    (sum, p) => sum + p.sourceCount,
+    0,
+  )
+  const hasAnyGtm = projectsWithGtm.some((p) => p.gtm.completed > 0)
+  const firstProject = projectsWithGtm[0] ?? null
 
-  const hasAnyGtm = projectsWithGtm.some((p) => p.gtm.completed > 0);
-  const firstProject = projectsWithGtm[0] ?? null;
-
-  const needsOnboarding = projects.length === 0 || totalSources === 0 || networkStats.total === 0 || !hasAnyGtm;
+  const needsOnboarding =
+    projects.length === 0 ||
+    totalSources === 0 ||
+    networkStats.total === 0 ||
+    !hasAnyGtm
 
   const onboardingSteps = [
     {
       key: 'project',
       title: 'Create your first project',
-      subtitle: 'Define what you\'re building, your goals, and desired outcomes.',
+      subtitle:
+        "Define what you're building, your goals, and desired outcomes.",
       href: '/projects',
-      cta: 'Create Project',
+      cta: 'Create',
       complete: projects.length > 0,
     },
     {
       key: 'capture',
       title: 'Capture some research',
-      subtitle: 'Paste competitor links, articles, or notes into your project.',
+      subtitle:
+        'Paste competitor links, articles, or notes into your project.',
       href: firstProject ? `/projects/${firstProject.slug}` : '/projects',
-      cta: 'Start Capturing',
+      cta: 'Capture',
       complete: totalSources > 0,
     },
     {
       key: 'network',
       title: 'Import your network',
-      subtitle: 'Drop your LinkedIn or Twitter export to unlock network intelligence.',
+      subtitle:
+        'Drop your LinkedIn or Twitter export to unlock network intelligence.',
       href: '/network',
-      cta: 'Import Network',
+      cta: 'Import',
       complete: networkStats.total > 0,
     },
     {
       key: 'gtm',
       title: 'Build your GTM',
-      subtitle: 'One click generates your complete go-to-market strategy.',
+      subtitle:
+        'One click generates your complete go-to-market strategy.',
       href: firstProject ? `/projects/${firstProject.slug}/gtm` : '/projects',
-      cta: 'Build GTM',
+      cta: 'Build',
       complete: hasAnyGtm,
     },
-  ];
+  ]
 
   return (
-    <section className="fleet-stack">
-      {/* Onboarding */}
+    <div className="mx-auto max-w-6xl space-y-8 px-6 py-10">
+      {/* Onboarding (when not all steps done) */}
       {needsOnboarding && (
-        <Onboarding steps={onboardingSteps} projectSlug={firstProject?.slug ?? null} />
+        <Onboarding
+          steps={onboardingSteps}
+          projectSlug={firstProject?.slug ?? null}
+        />
       )}
 
-      {/* Hero header */}
-      <header className="home-hero">
-        <div className="home-hero-text">
-          <h1 className="home-hero-title">Good {getTimeOfDay()}.</h1>
-          <p className="home-hero-subtitle">
-            {projects.length === 0
-              ? 'Create your first project to get started with Fleet.'
-              : `${activeProjects.length} active project${activeProjects.length !== 1 ? 's' : ''}, ${totalSources} sources captured, ${totalArtifacts} artifacts generated.`}
-          </p>
-        </div>
+      {/* Greeting */}
+      <header className="space-y-1">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          Good {getTimeOfDay()}.
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          {projects.length === 0
+            ? 'Create your first project to get started with Fleet.'
+            : `${activeProjects.length} active project${activeProjects.length !== 1 ? 's' : ''} · ${totalSources} source${totalSources !== 1 ? 's' : ''} captured · ${totalArtifacts} artifact${totalArtifacts !== 1 ? 's' : ''} generated`}
+        </p>
       </header>
 
       {/* Stats row */}
-      <div className="home-stats-row">
-        <StatCard label="Projects" value={String(projects.length)} href="/projects" />
-        <StatCard label="Sources" value={String(totalSources)} />
-        <StatCard label="Connections" value={String(networkStats.total)} href="/network" />
-        <StatCard label="Artifacts" value={String(totalArtifacts)} />
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <StatTile label="Projects" value={projects.length} href="/projects" />
+        <StatTile label="Sources" value={totalSources} />
+        <StatTile
+          label="Connections"
+          value={networkStats.total}
+          href="/network"
+        />
+        <StatTile label="Artifacts" value={totalArtifacts} />
       </div>
 
       {/* Quick actions */}
-      <div className="home-actions">
-        <Link href="/projects/quick-start" className="home-action-card home-action-accent">
-          <span className="home-action-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-            </svg>
-          </span>
-          <span className="home-action-label">Idea to GTM in 60s</span>
-          <span className="home-action-desc">One sentence to full strategy</span>
-        </Link>
-        {firstProject && (
-          <Link href={`/projects/${firstProject.slug}`} className="home-action-card">
-            <span className="home-action-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-            </span>
-            <span className="home-action-label">Open War Room</span>
-            <span className="home-action-desc">Chat with your GTM agent</span>
-          </Link>
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <ActionCard
+          href="/projects/quick-start"
+          icon={Sparkles}
+          title="Idea to GTM in 60s"
+          description="One sentence to full strategy"
+          accent
+        />
+        {firstProject ? (
+          <ActionCard
+            href={`/projects/${firstProject.slug}`}
+            icon={Zap}
+            title="Open War Room"
+            description="Chat with your GTM agent"
+          />
+        ) : (
+          <ActionCard
+            href="/projects"
+            icon={Zap}
+            title="Create a project"
+            description="Define what you're building"
+          />
         )}
-        <Link href="/network" className="home-action-card">
-          <span className="home-action-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-          </span>
-          <span className="home-action-label">Import Network</span>
-          <span className="home-action-desc">LinkedIn or Twitter connections</span>
-        </Link>
-        {firstProject && (
-          <Link href={`/projects/${firstProject.slug}/gtm`} className="home-action-card home-action-accent">
-            <span className="home-action-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-              </svg>
-            </span>
-            <span className="home-action-label">Build GTM</span>
-            <span className="home-action-desc">Generate your go-to-market</span>
-          </Link>
+        <ActionCard
+          href="/network"
+          icon={NetworkIcon}
+          title="Import network"
+          description="LinkedIn or Twitter connections"
+        />
+        {firstProject ? (
+          <ActionCard
+            href={`/projects/${firstProject.slug}/gtm`}
+            icon={Sparkles}
+            title="Build GTM"
+            description="Generate your go-to-market"
+            accent
+          />
+        ) : (
+          <ActionCard
+            href="/inbox"
+            icon={Inbox}
+            title="Open inbox"
+            description="Triage captured research"
+          />
         )}
       </div>
 
       {/* Projects list */}
       {projectsWithGtm.length > 0 && (
-        <div className="fleet-panel fleet-stack">
-          <div className="home-section-header">
-            <h2 className="fleet-heading-sm">Projects</h2>
-            <Link href="/projects" className="home-view-all">View all →</Link>
+        <Card className="overflow-hidden p-0">
+          <div className="flex items-center justify-between border-b border-border px-5 py-3">
+            <h2 className="text-sm font-semibold text-foreground">Projects</h2>
+            <Link
+              href="/projects"
+              className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+            >
+              View all →
+            </Link>
           </div>
-
-          <div className="home-project-list">
+          <ul className="divide-y divide-border">
             {projectsWithGtm.slice(0, 5).map((project) => (
-              <Link
-                key={project.slug}
-                href={`/projects/${project.slug}`}
-                className="home-project-card fleet-panel-interactive"
-              >
-                <div className="home-project-top">
-                  <strong className="home-project-title">{project.title}</strong>
-                  <span className={`fleet-badge ${project.status === 'active' ? 'fleet-badge-active' : project.status === 'draft' ? 'fleet-badge-draft' : 'fleet-badge-paused'}`}>
-                    {project.status === 'active' && <span className="fleet-badge-dot" />}
-                    {project.status}
-                  </span>
-                </div>
-
-                {/* GTM progress bar */}
-                <div className="home-project-progress">
-                  <div className="home-project-progress-track">
-                    <div
-                      className="home-project-progress-fill"
-                      style={{
-                        width: `${(project.gtm.completed / project.gtm.total) * 100}%`,
-                        background: project.gtm.completed === project.gtm.total
-                          ? 'var(--fleet-success)'
-                          : 'linear-gradient(90deg, var(--fleet-accent) 0%, #818cf8 100%)',
-                      }}
-                    />
+              <li key={project.slug}>
+                <Link
+                  href={`/projects/${project.slug}`}
+                  className="flex items-center justify-between gap-4 px-5 py-3 transition-colors hover:bg-accent/40"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2.5">
+                      <span className="truncate text-sm font-medium text-foreground">
+                        {project.title}
+                      </span>
+                      <Badge
+                        variant={
+                          project.status === 'active'
+                            ? 'default'
+                            : 'secondary'
+                        }
+                        className="h-5 text-[10px] tracking-wider uppercase"
+                      >
+                        {project.status}
+                      </Badge>
+                    </div>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      {project.sourceCount} sources ·{' '}
+                      {project.gtm.artifacts.length} artifacts ·{' '}
+                      GTM {project.gtm.completed}/{project.gtm.total}
+                    </p>
                   </div>
-                  <span className="home-project-progress-label">
-                    GTM {project.gtm.completed}/{project.gtm.total}
-                  </span>
-                </div>
-
-                <div className="home-project-meta">
-                  <span>{project.sourceCount} sources</span>
-                  <span>{project.gtm.artifacts.length} artifacts</span>
-                </div>
-              </Link>
+                  <div className="hidden w-32 md:block">
+                    <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className={cn(
+                          'h-full transition-all',
+                          project.gtm.completed === project.gtm.total
+                            ? 'bg-[color:var(--success)]'
+                            : 'bg-primary',
+                        )}
+                        style={{
+                          width: `${(project.gtm.completed / project.gtm.total) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
+                </Link>
+              </li>
             ))}
-          </div>
-        </div>
+          </ul>
+        </Card>
       )}
 
-      {/* Network + Capture row */}
-      <div className="home-bottom-row">
-        {/* Quick capture */}
-        <article className="fleet-panel">
-          <p className="fleet-eyebrow" style={{ marginBottom: '0.5rem' }}>Quick Capture</p>
+      {/* Bottom row: capture + network summary */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <Card className="p-5">
+          <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+            Quick capture
+          </p>
           <CaptureForm />
-        </article>
+        </Card>
 
-        {/* Network summary */}
         {networkStats.total > 0 ? (
-          <article className="fleet-panel fleet-stack">
-            <div className="home-section-header">
-              <h3 className="fleet-heading-sm">Network</h3>
-              <Link href="/network" className="home-view-all">View →</Link>
+          <Card className="p-5">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+                Network
+              </p>
+              <Link
+                href="/network"
+                className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+              >
+                View →
+              </Link>
             </div>
-            <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+            <div className="flex flex-wrap gap-1.5">
               {networkStats.linkedin > 0 && (
-                <span className="fleet-badge" style={{ background: 'rgba(0, 119, 181, 0.12)', color: '#0077b5' }}>
+                <Badge variant="secondary" className="font-normal">
                   {networkStats.linkedin} LinkedIn
-                </span>
+                </Badge>
               )}
               {networkStats.twitter > 0 && (
-                <span className="fleet-badge" style={{ background: 'rgba(29, 155, 240, 0.12)', color: '#1d9bf0' }}>
+                <Badge variant="secondary" className="font-normal">
                   {networkStats.twitter} Twitter
-                </span>
+                </Badge>
               )}
             </div>
             {networkStats.topCompanies.length > 0 && (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+              <div className="mt-3 flex flex-wrap gap-1.5">
                 {networkStats.topCompanies.slice(0, 6).map((c) => (
-                  <span key={c.name} className="fleet-badge fleet-badge-paused">
-                    {c.name} ({c.count})
-                  </span>
+                  <Badge
+                    key={c.name}
+                    variant="outline"
+                    className="font-normal text-muted-foreground"
+                  >
+                    {c.name}{' '}
+                    <span className="ml-1 text-[10px] opacity-60">
+                      {c.count}
+                    </span>
+                  </Badge>
                 ))}
               </div>
             )}
-          </article>
+          </Card>
         ) : (
-          <article className="fleet-panel" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.35rem' }}>
-            <p style={{ margin: 0, fontSize: '0.82rem', fontWeight: 600 }}>Import your network</p>
-            <p className="fleet-caption" style={{ margin: 0 }}>
-              Drop your LinkedIn or Twitter export to unlock network intelligence.
+          <Card className="flex flex-col items-center justify-center gap-2 p-6 text-center">
+            <div className="flex size-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground">
+              <Users className="size-4" />
+            </div>
+            <p className="text-sm font-medium text-foreground">
+              Import your network
             </p>
-            <Link href="/network" style={{ fontSize: '0.75rem', color: 'var(--fleet-accent)', fontWeight: 600, marginTop: '0.25rem' }}>
+            <p className="text-xs text-muted-foreground">
+              Drop your LinkedIn or Twitter export to unlock network
+              intelligence.
+            </p>
+            <Link
+              href="/network"
+              className="mt-1 text-xs font-medium text-primary transition-colors hover:opacity-80"
+            >
               Go to Network →
             </Link>
-          </article>
+          </Card>
         )}
       </div>
-    </section>
-  );
-}
-
-function getTimeOfDay(): string {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'morning';
-  if (hour < 17) return 'afternoon';
-  return 'evening';
-}
-
-function StatCard({ label, value, href }: { label: string; value: string; href?: string }) {
-  const inner = (
-    <div className="home-stat-card">
-      <p className="home-stat-label">{label}</p>
-      <p className="home-stat-value">{value}</p>
     </div>
-  );
+  )
+}
 
+function StatTile({
+  label,
+  value,
+  href,
+}: {
+  label: string
+  value: number
+  href?: string
+}) {
+  const inner = (
+    <div className="rounded-lg border border-border bg-card/40 p-4 transition-colors hover:bg-card/70">
+      <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+        {label}
+      </p>
+      <p className="mt-1 font-mono text-2xl font-semibold tabular-nums text-foreground">
+        {value}
+      </p>
+    </div>
+  )
   if (href) {
-    return <Link href={href} className="home-stat-link">{inner}</Link>;
+    return (
+      <Link href={href} className="block">
+        {inner}
+      </Link>
+    )
   }
+  return inner
+}
 
-  return inner;
+function ActionCard({
+  href,
+  icon: Icon,
+  title,
+  description,
+  accent,
+}: {
+  href: string
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
+  title: string
+  description: string
+  accent?: boolean
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        'group flex flex-col gap-2 rounded-lg border p-4 transition-all',
+        accent
+          ? 'border-primary/30 bg-primary/5 hover:border-primary/50 hover:bg-primary/10'
+          : 'border-border bg-card/40 hover:border-border hover:bg-card/70',
+      )}
+    >
+      <div
+        className={cn(
+          'flex size-8 items-center justify-center rounded-md',
+          accent
+            ? 'bg-primary/15 text-primary'
+            : 'bg-muted text-muted-foreground',
+        )}
+      >
+        <Icon className="size-4" />
+      </div>
+      <div className="space-y-0.5">
+        <p className="text-sm font-medium text-foreground">{title}</p>
+        <p className="text-xs text-muted-foreground">{description}</p>
+      </div>
+    </Link>
+  )
 }

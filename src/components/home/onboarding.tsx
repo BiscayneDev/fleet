@@ -1,101 +1,124 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { Check } from 'lucide-react'
+
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 interface OnboardingStep {
-  key: string;
-  title: string;
-  subtitle: string;
-  href: string;
-  cta: string;
-  complete: boolean;
+  readonly key: string
+  readonly title: string
+  readonly subtitle: string
+  readonly href: string
+  readonly cta: string
+  readonly complete: boolean
 }
 
 interface OnboardingProps {
-  steps: OnboardingStep[];
-  projectSlug: string | null;
+  readonly steps: OnboardingStep[]
+  readonly projectSlug: string | null
 }
 
 export function Onboarding({ steps, projectSlug }: OnboardingProps) {
-  const [dismissed, setDismissed] = useState(false);
+  const [dismissed, setDismissed] = useState(false)
 
   useEffect(() => {
-    const stored = localStorage.getItem('fleet-onboarding-dismissed');
-    if (stored === 'true') setDismissed(true);
-  }, []);
+    const stored = localStorage.getItem('fleet-onboarding-dismissed')
+    if (stored === 'true') setDismissed(true)
+  }, [])
+
+  if (dismissed) return null
+
+  const completedCount = steps.filter((s) => s.complete).length
+  if (completedCount === steps.length) return null
 
   function handleDismiss() {
-    localStorage.setItem('fleet-onboarding-dismissed', 'true');
-    setDismissed(true);
+    localStorage.setItem('fleet-onboarding-dismissed', 'true')
+    setDismissed(true)
   }
 
-  if (dismissed) return null;
-
-  const completedCount = steps.filter((s) => s.complete).length;
-  const allDone = completedCount === steps.length;
-
-  if (allDone) return null;
-
   return (
-    <div className="onboarding">
-      <div className="onboarding-header">
-        <div>
-          <h1 className="onboarding-title">Welcome to Fleet</h1>
-          <p className="onboarding-subtitle">
-            Get your GTM strategy built in 4 steps. Each step takes under a minute.
+    <section className="rounded-xl border border-border bg-card/40 p-6">
+      <header className="mb-5 flex items-start justify-between gap-4">
+        <div className="space-y-1">
+          <h2 className="text-base font-semibold tracking-tight text-foreground">
+            Welcome to Fleet
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Get your GTM strategy built in 4 steps. Each step takes under a
+            minute.
           </p>
         </div>
-        <div className="onboarding-progress-ring">
-          <span className="onboarding-progress-count">{completedCount}/{steps.length}</span>
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-xs tabular-nums text-muted-foreground">
+            {completedCount} / {steps.length}
+          </span>
+          <button
+            onClick={handleDismiss}
+            className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Skip setup
+          </button>
         </div>
-      </div>
+      </header>
 
-      <div className="onboarding-steps">
+      <ol className="divide-y divide-border/50 rounded-lg border border-border/50 bg-background/40">
         {steps.map((step, i) => {
-          const href = step.key === 'capture' && projectSlug
-            ? `/projects/${projectSlug}`
-            : step.key === 'gtm' && projectSlug
-              ? `/projects/${projectSlug}/gtm`
-              : step.href;
+          const href =
+            step.key === 'capture' && projectSlug
+              ? `/projects/${projectSlug}`
+              : step.key === 'gtm' && projectSlug
+                ? `/projects/${projectSlug}/gtm`
+                : step.href
 
           return (
-            <div
+            <li
               key={step.key}
-              className={`onboarding-step ${step.complete ? 'onboarding-step-done' : ''}`}
+              className={cn(
+                'flex items-center gap-4 px-4 py-3 transition-colors',
+                !step.complete && 'hover:bg-accent/40',
+              )}
             >
-              <div className="onboarding-step-indicator">
+              <div
+                className={cn(
+                  'flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-medium',
+                  step.complete
+                    ? 'bg-primary/15 text-primary'
+                    : 'border border-border bg-card text-muted-foreground',
+                )}
+              >
                 {step.complete ? (
-                  <div className="onboarding-check">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  </div>
+                  <Check className="size-3.5" strokeWidth={3} />
                 ) : (
-                  <div className="onboarding-number">{i + 1}</div>
+                  i + 1
                 )}
               </div>
-              <div className="onboarding-step-content">
-                <h3 className="onboarding-step-title">{step.title}</h3>
-                <p className="onboarding-step-subtitle">{step.subtitle}</p>
+              <div className="min-w-0 flex-1">
+                <p
+                  className={cn(
+                    'text-sm font-medium',
+                    step.complete
+                      ? 'text-muted-foreground line-through'
+                      : 'text-foreground',
+                  )}
+                >
+                  {step.title}
+                </p>
+                <p className="text-xs text-muted-foreground">{step.subtitle}</p>
               </div>
-              <div className="onboarding-step-action">
-                {step.complete ? (
-                  <span className="onboarding-done-label">Done</span>
-                ) : (
-                  <Link href={href} className="onboarding-cta">
-                    {step.cta}
-                  </Link>
-                )}
-              </div>
-            </div>
-          );
+              {step.complete ? (
+                <span className="text-xs text-muted-foreground">Done</span>
+              ) : (
+                <Button asChild variant="secondary" size="sm">
+                  <Link href={href}>{step.cta}</Link>
+                </Button>
+              )}
+            </li>
+          )
         })}
-      </div>
-
-      <button className="onboarding-dismiss" onClick={handleDismiss}>
-        Skip setup
-      </button>
-    </div>
-  );
+      </ol>
+    </section>
+  )
 }
