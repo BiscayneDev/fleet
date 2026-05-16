@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Toaster } from 'sonner';
 
 import './globals.css';
 
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body>
         <div className="fleet-root">{children}</div>
+        <Toaster position="bottom-right" theme="dark" richColors closeButton />
       </body>
     </html>
   );
