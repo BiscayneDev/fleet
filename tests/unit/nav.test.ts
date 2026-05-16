@@ -10,6 +10,7 @@ describe('fleetNavItems', () => {
       'inbox',
       'network',
       'wiki',
+      'waitlists',
     ]);
   });
 });

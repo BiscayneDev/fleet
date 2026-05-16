@@ -4,7 +4,8 @@ export type FleetNavItem = {
     | 'projects'
     | 'inbox'
     | 'network'
-    | 'wiki';
+    | 'wiki'
+    | 'waitlists';
   label: string;
   href: string;
 };
@@ -15,4 +16,5 @@ export const fleetNavItems: FleetNavItem[] = [
   { key: 'inbox', label: 'Inbox', href: '/inbox' },
   { key: 'network', label: 'Network', href: '/network' },
   { key: 'wiki', label: 'Wiki', href: '/wiki' },
+  { key: 'waitlists', label: 'Waitlists', href: '/waitlists' },
 ];

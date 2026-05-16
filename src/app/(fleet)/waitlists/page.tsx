@@ -32,16 +32,36 @@ export default async function WaitlistsPage() {
         <h1 className="project-header-title">Waitlists</h1>
         <p className="project-header-summary">
           Sync waitlist signups into your vault and match them against your
-          contacts. {isVaultMode() ? (
-            <>Vault mode is <strong>on</strong> — reading from{' '}
-              <code>$FLEET_VAULT_ROOT/waitlists/</code>.</>
-          ) : (
-            <>Vault mode is <strong>off</strong> — using{' '}
-              <code>./data/waitlists/</code>. Set <code>FLEET_VAULT_ROOT</code>{' '}
-              to write into your Obsidian vault.</>
-          )}
+          contacts.
         </p>
       </header>
+
+      {!isVaultMode() && (
+        <section
+          className="fleet-panel"
+          style={{
+            borderColor: 'rgba(99, 102, 241, 0.3)',
+            background:
+              'linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(34, 211, 238, 0.04))',
+          }}
+        >
+          <p className="fleet-eyebrow" style={{ marginBottom: '0.5rem' }}>
+            Vault not configured
+          </p>
+          <p style={{ margin: '0 0 0.5rem 0' }}>
+            Set <code>FLEET_VAULT_ROOT</code> to write waitlist signups and
+            matches into your Obsidian vault as markdown — and to read
+            contacts from <code>&lt;vault&gt;/contacts/*.md</code> when
+            matching.
+          </p>
+          <p className="fleet-caption" style={{ margin: 0 }}>
+            Without it, Fleet falls back to <code>./data/waitlists/</code>{' '}
+            (still works, just not vault-integrated). Add{' '}
+            <code>FLEET_VAULT_ROOT=/absolute/path/to/your/vault</code> to your{' '}
+            <code>.env.local</code> and restart.
+          </p>
+        </section>
+      )}
 
       <section className="fleet-panel fleet-stack">
         <div
