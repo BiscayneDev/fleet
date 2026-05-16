@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { writeWikiPage, listWikiPages, getWikiPage } from '@/lib/fs/wiki-store';
-import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { rm } from 'node:fs/promises';
 import { resolveDataPath } from '@/lib/fs/path-utils';
 import * as path from 'node:path';
 

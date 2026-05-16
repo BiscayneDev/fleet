@@ -34,7 +34,7 @@ export function parseLinkedInCSV(csvContent: string): CreateConnectionInput[] {
 
   // LinkedIn exports include disclaimer lines before the actual CSV header.
   // Find the line that contains the column headers.
-  let headerLineIdx = lines.findIndex((line) => {
+  const headerLineIdx = lines.findIndex((line) => {
     const lower = line.toLowerCase();
     return lower.includes('first name') && lower.includes('last name');
   });

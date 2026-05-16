@@ -33,7 +33,6 @@ export default async function GtmExportPage({ params }: ExportPageProps) {
   const allArtifacts = await listArtifacts(slug);
 
   // Order artifacts by GTM step sequence
-  const gtmArtifactTypes = gtmSteps.map((s) => s.artifactType);
   const gtmArtifacts = gtmSteps
     .map((step) => {
       const artifact = allArtifacts.find((a) => a.type === step.artifactType);

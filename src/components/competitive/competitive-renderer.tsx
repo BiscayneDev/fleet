@@ -167,7 +167,7 @@ function GapCards({ body }: { body: string }) {
 
 function AttackCards({ body }: { body: string }) {
   // Try to parse structured attack angles with sub-items
-  const blocks = body.split(/\n(?=\d+\.\s|\-\s\*\*|\*\*\d)/).filter((b) => b.trim());
+  const blocks = body.split(/\n(?=\d+\.\s|-\s\*\*|\*\*\d)/).filter((b) => b.trim());
 
   if (blocks.length === 0) return <TextSection body={body} />;
 

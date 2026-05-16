@@ -4,7 +4,6 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { scrapeUrl } from '@/lib/llm-wiki/scraper';
 import { getProject } from '@/lib/fs/project-store';
 import { listWikiPages } from '@/lib/fs/wiki-store';
-import { listArtifacts } from '@/lib/fs/artifact-store';
 import { writeArtifact } from '@/lib/fs/artifact-store';
 
 function resolveProvider() {
@@ -105,10 +104,7 @@ export async function POST(request: Request) {
     }
 
     // Build context from existing intel
-    const [wikiPages, artifacts] = await Promise.all([
-      listWikiPages(projectSlug),
-      listArtifacts(projectSlug),
-    ]);
+    const wikiPages = await listWikiPages(projectSlug);
 
     const existingIntel = wikiPages
       .slice(0, 10)

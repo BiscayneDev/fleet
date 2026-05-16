@@ -24,19 +24,6 @@ export interface ParseError {
 
 export type ParseResult = ParsedResponse | ParseError;
 
-const ENRICHMENT_SYSTEM_PROMPT = `You are a GTM intelligence analyst. Given a company/product page, produce a concise executive briefing.
-
-Return ONLY valid JSON:
-{
-  "summary": "2-3 sentences: what is this, who is it for, why does it matter right now",
-  "concepts": ["key technology or business concepts this company uses"],
-  "competitors": ["direct competitors — real companies, not generic categories"],
-  "risks": ["real competitive or market risks — be specific, not generic"],
-  "suggestedActions": ["1-2 concrete next steps for someone evaluating this space"]
-}
-
-Be specific and opinionated. Name real competitors. Flag real risks. No filler.`;
-
 export function buildEnrichmentPrompt(input: EnrichmentInput): string {
   const truncatedText = input.text.slice(0, 8000);
 
