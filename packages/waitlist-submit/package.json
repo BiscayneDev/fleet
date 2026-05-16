@@ -1,0 +1,55 @@
+{
+  "name": "fleet-waitlist-submit",
+  "version": "0.1.0",
+  "description": "Server-side helper that commits waitlist signups as markdown to a developer's vault repo on GitHub. Part of the Fleet GTM toolkit.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "fleet",
+    "waitlist",
+    "obsidian",
+    "vault",
+    "github",
+    "markdown",
+    "gtm"
+  ],
+  "author": "Halsey Huth <halsey.huth@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BiscayneDev/fleet.git",
+    "directory": "packages/waitlist-submit"
+  },
+  "homepage": "https://github.com/BiscayneDev/fleet/tree/main/packages/waitlist-submit#readme",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "dependencies": {
+    "@octokit/rest": "^22.0.1",
+    "gray-matter": "^4.0.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "typescript": "^5",
+    "vitest": "^3.2.4"
+  }
+}

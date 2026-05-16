@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
   "engines": {
     "node": ">=20.9.0"
   },
@@ -12,7 +15,8 @@
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:packages": "npm run test --workspaces --if-present"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.53",
