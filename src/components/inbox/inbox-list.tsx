@@ -1,42 +1,64 @@
-import type { InboxItem } from '@/lib/fs/inbox-store';
+import { ExternalLink, Hash, Lightbulb, FileText } from 'lucide-react'
 
-export function InboxList({ items }: { items: InboxItem[] }) {
-  if (items.length === 0) {
-    return <p className="fleet-eyebrow">Nothing captured yet.</p>;
-  }
+import type { InboxEntry } from '@/lib/fs/inbox-store'
+import { Badge } from '@/components/ui/badge'
+
+function iconFor(kind: string | null) {
+  if (kind === 'link') return ExternalLink
+  if (kind === 'idea') return Lightbulb
+  if (kind) return Hash
+  return FileText
+}
+
+function formatRelative(capturedAt: string): string {
+  const d = new Date(capturedAt)
+  return d.toLocaleString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+export function InboxList({ items }: { items: InboxEntry[] }) {
+  if (items.length === 0) return null
 
   return (
-    <ul style={{ display: 'grid', gap: '0.75rem', listStyle: 'none', margin: '1rem 0 0', padding: 0 }}>
-      {items.map((item) => (
-        <li
-          key={item.id}
-          style={{
-            background: 'var(--fleet-panel-muted)',
-            border: '1px solid var(--fleet-border)',
-            borderRadius: '0.75rem',
-            padding: '1rem',
-          }}
-        >
-          <div style={{ alignItems: 'center', display: 'flex', gap: '0.75rem', justifyContent: 'space-between' }}>
-            <strong>{item.title}</strong>
-            <span className="fleet-eyebrow">{item.type}</span>
-          </div>
-          <p style={{ margin: '0.5rem 0', whiteSpace: 'pre-wrap' }}>{item.body}</p>
-          <div
-            style={{
-              alignItems: 'center',
-              color: 'var(--fleet-text-muted)',
-              display: 'flex',
-              fontSize: '0.875rem',
-              gap: '0.75rem',
-              justifyContent: 'space-between',
-            }}
+    <ol className="divide-y divide-border rounded-lg border border-border bg-card/40">
+      {items.map((entry) => {
+        const Icon = iconFor(entry.kind)
+        return (
+          <li
+            key={entry.id}
+            className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-accent/30"
           >
-            <span>{new Date(item.createdAt).toLocaleString()}</span>
-            <span>{item.ingestionStatus}</span>
-          </div>
-        </li>
-      ))}
-    </ul>
-  );
+            <Icon className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <span className="truncate text-sm font-medium text-foreground">
+                  {entry.title}
+                </span>
+                {entry.kind && (
+                  <Badge
+                    variant="outline"
+                    className="font-normal text-muted-foreground"
+                  >
+                    {entry.kind}
+                  </Badge>
+                )}
+              </div>
+              {entry.body !== entry.title && (
+                <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+                  {entry.body}
+                </p>
+              )}
+            </div>
+            <span className="shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground">
+              {formatRelative(entry.capturedAt)}
+            </span>
+          </li>
+        )
+      })}
+    </ol>
+  )
 }
