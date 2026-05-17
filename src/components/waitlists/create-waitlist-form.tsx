@@ -1,19 +1,23 @@
-'use client';
+'use client'
 
-import { useState, type FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
+import { useState, type FormEvent } from 'react'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import { Plus } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 export function CreateWaitlistForm() {
-  const router = useRouter();
-  const [product, setProduct] = useState('');
-  const [name, setName] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const router = useRouter()
+  const [product, setProduct] = useState('')
+  const [name, setName] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   async function handleSubmit(event: FormEvent) {
-    event.preventDefault();
-    if (!product.trim() || submitting) return;
-    setSubmitting(true);
+    event.preventDefault()
+    if (!product.trim() || submitting) return
+    setSubmitting(true)
     try {
       const res = await fetch('/api/waitlists', {
         method: 'POST',
@@ -22,29 +26,30 @@ export function CreateWaitlistForm() {
           product: product.trim(),
           name: name.trim() || undefined,
         }),
-      });
+      })
       if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        toast.error(data?.error ?? 'Failed to create waitlist');
-        return;
+        const data = await res.json().catch(() => null)
+        toast.error(data?.error ?? 'Failed to create waitlist')
+        return
       }
-      toast.success(`Waitlist "${product.trim()}" created`);
-      setProduct('');
-      setName('');
-      router.refresh();
+      toast.success(`Created waitlist /${product.trim()}`)
+      setProduct('')
+      setName('')
+      router.refresh()
     } catch {
-      toast.error('Unable to reach the server');
+      toast.error('Unable to reach the server')
     } finally {
-      setSubmitting(false);
+      setSubmitting(false)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="fleet-stack">
-      <label className="capture-form-label">
-        <span className="fleet-eyebrow">Product slug</span>
-        <input
-          className="capture-textarea"
+    <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_1fr_auto]">
+      <div className="space-y-1">
+        <label className="block text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">
+          Product slug
+        </label>
+        <Input
           type="text"
           placeholder="my-product"
           value={product}
@@ -54,25 +59,29 @@ export function CreateWaitlistForm() {
           title="Lowercase letters, numbers, and dashes"
           required
         />
-      </label>
-      <label className="capture-form-label">
-        <span className="fleet-eyebrow">Display name (optional)</span>
-        <input
-          className="capture-textarea"
+      </div>
+      <div className="space-y-1">
+        <label className="block text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">
+          Display name <span className="opacity-50">(optional)</span>
+        </label>
+        <Input
           type="text"
           placeholder="My Product"
           value={name}
           onChange={(e) => setName(e.target.value)}
           disabled={submitting}
         />
-      </label>
-      <button
-        className="fleet-button fleet-button-primary"
-        type="submit"
-        disabled={submitting || !product.trim()}
-      >
-        {submitting ? 'Creating…' : 'Create waitlist'}
-      </button>
+      </div>
+      <div className="flex items-end">
+        <Button
+          type="submit"
+          disabled={submitting || !product.trim()}
+          className="w-full sm:w-auto"
+        >
+          <Plus className="size-3.5" />
+          {submitting ? 'Creating…' : 'Create'}
+        </Button>
+      </div>
     </form>
-  );
+  )
 }

@@ -1,143 +1,150 @@
-import Link from 'next/link';
+import Link from 'next/link'
+import { Activity, AlertCircle, ArrowRight } from 'lucide-react'
 
-import { CreateWaitlistForm } from '@/components/waitlists/create-waitlist-form';
-import { RunMatcherButton } from '@/components/waitlists/run-matcher-button';
+import { CreateWaitlistForm } from '@/components/waitlists/create-waitlist-form'
+import { RunMatcherButton } from '@/components/waitlists/run-matcher-button'
+import { Card } from '@/components/ui/card'
+import { EmptyState } from '@/components/empty-state/empty-state'
 import {
   listMatches,
   listSignups,
   listWaitlists,
   isVaultMode,
-} from '@/lib/fs/waitlist-store';
-import { getDefaultVaultContactsDir } from '@/lib/fs/contact-loader';
+} from '@/lib/fs/waitlist-store'
+import { getDefaultVaultContactsDir } from '@/lib/fs/contact-loader'
 
 export default async function WaitlistsPage() {
-  const waitlists = await listWaitlists();
+  const waitlists = await listWaitlists()
 
   const summaries = await Promise.all(
     waitlists.map(async (w) => {
       const [signups, matches] = await Promise.all([
         listSignups(w.product),
         listMatches(w.product),
-      ]);
+      ])
       return {
         ...w,
         signupCount: signups.length,
         matchCount: matches.length,
-      };
+      }
     }),
-  );
+  )
+
+  const vaultActive = isVaultMode()
 
   return (
-    <div className="fleet-stack">
-      <header className="project-header">
-        <h1 className="project-header-title">Waitlists</h1>
-        <p className="project-header-summary">
+    <div className="mx-auto max-w-5xl space-y-8 px-6 py-10">
+      <header className="space-y-1.5 border-b border-border pb-6">
+        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+          Waitlists
+        </p>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          Waitlists
+        </h1>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           Sync waitlist signups into your vault and match them against your
           contacts.
         </p>
-        {isVaultMode() && (
-          <p className="fleet-caption" style={{ marginTop: '0.5rem' }}>
-            Vault: <code>$FLEET_VAULT_ROOT</code> · contacts dir:{' '}
-            <code>{getDefaultVaultContactsDir()}/</code>
+        {vaultActive && (
+          <p className="font-mono text-[11px] text-muted-foreground">
+            $FLEET_VAULT_ROOT · contacts dir{' '}
+            <span className="text-foreground/80">
+              {getDefaultVaultContactsDir()}/
+            </span>
           </p>
         )}
       </header>
 
-      {!isVaultMode() && (
-        <section
-          className="fleet-panel"
-          style={{
-            borderColor: 'rgba(99, 102, 241, 0.3)',
-            background:
-              'linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(34, 211, 238, 0.04))',
-          }}
-        >
-          <p className="fleet-eyebrow" style={{ marginBottom: '0.5rem' }}>
-            Vault not configured
-          </p>
-          <p style={{ margin: '0 0 0.5rem 0' }}>
-            Set <code>FLEET_VAULT_ROOT</code> to write waitlist signups and
-            matches into your Obsidian vault as markdown — and to read
-            contacts from <code>&lt;vault&gt;/contacts/*.md</code> when
-            matching.
-          </p>
-          <p className="fleet-caption" style={{ margin: 0 }}>
-            Without it, Fleet falls back to <code>./data/waitlists/</code>{' '}
-            (still works, just not vault-integrated). Add{' '}
-            <code>FLEET_VAULT_ROOT=/absolute/path/to/your/vault</code> to your{' '}
-            <code>.env.local</code> and restart. If your contact markdown
-            lives somewhere other than{' '}
-            <code>&lt;vault&gt;/contacts/</code> (e.g. Karpathy-style{' '}
-            <code>wiki/people/</code>), also set{' '}
-            <code>FLEET_VAULT_CONTACTS_DIR=wiki/people</code>.
-          </p>
-        </section>
+      {!vaultActive && (
+        <Card className="border-primary/25 bg-primary/[0.04] p-5">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="mt-0.5 size-4 shrink-0 text-primary" />
+            <div className="space-y-2">
+              <p className="text-sm font-semibold text-foreground">
+                Vault not configured
+              </p>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Set <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">FLEET_VAULT_ROOT</code>{' '}
+                to write waitlist signups and matches into your Obsidian vault as
+                markdown — and to read contacts from{' '}
+                <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">{`<vault>/contacts/*.md`}</code>{' '}
+                when matching.
+              </p>
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                Without it, Fleet falls back to{' '}
+                <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">./data/waitlists/</code>.
+                For Karpathy-style vaults that keep contacts in{' '}
+                <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">wiki/people/</code>,
+                also set{' '}
+                <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">FLEET_VAULT_CONTACTS_DIR=wiki/people</code>.
+              </p>
+            </div>
+          </div>
+        </Card>
       )}
 
-      <section className="fleet-panel fleet-stack">
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: '1rem',
-            flexWrap: 'wrap',
-          }}
-        >
-          <h2 className="fleet-heading-sm">Your waitlists</h2>
+      <section className="space-y-3">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-sm font-semibold text-foreground">
+            Your waitlists
+          </h2>
           <RunMatcherButton />
         </div>
 
         {summaries.length === 0 ? (
-          <p className="fleet-caption">
-            No waitlists yet. Create one below to start collecting signups.
-          </p>
+          <EmptyState
+            icon={Activity}
+            title="No waitlists yet"
+            description="Create one below to start collecting signups. Each waitlist becomes a markdown folder in your vault."
+          />
         ) : (
-          <ul
-            style={{
-              listStyle: 'none',
-              padding: 0,
-              margin: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-            }}
-          >
-            {summaries.map((w) => (
-              <li key={w.product}>
-                <Link
-                  href={`/waitlists/${encodeURIComponent(w.product)}`}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '0.75rem 1rem',
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    borderRadius: '0.5rem',
-                    color: 'inherit',
-                    textDecoration: 'none',
-                  }}
-                >
-                  <span>
-                    <strong>{w.name ?? w.product}</strong>{' '}
-                    <span className="fleet-caption">/{w.product}</span>
-                  </span>
-                  <span className="fleet-caption">
-                    {w.signupCount} signup{w.signupCount === 1 ? '' : 's'} ·{' '}
-                    {w.matchCount} match{w.matchCount === 1 ? '' : 'es'}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <Card className="overflow-hidden p-0">
+            <ul className="divide-y divide-border">
+              {summaries.map((w) => (
+                <li key={w.product}>
+                  <Link
+                    href={`/waitlists/${encodeURIComponent(w.product)}`}
+                    className="flex items-center justify-between gap-4 px-5 py-3 transition-colors hover:bg-accent/40"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-foreground">
+                        {w.name ?? w.product}
+                      </p>
+                      <p className="font-mono text-xs text-muted-foreground">
+                        /{w.product}
+                      </p>
+                    </div>
+                    <div className="hidden gap-6 font-mono text-xs tabular-nums text-muted-foreground sm:flex">
+                      <span>
+                        <span className="text-foreground/80">
+                          {w.signupCount}
+                        </span>{' '}
+                        signup{w.signupCount === 1 ? '' : 's'}
+                      </span>
+                      <span>
+                        <span className="text-foreground/80">
+                          {w.matchCount}
+                        </span>{' '}
+                        match{w.matchCount === 1 ? '' : 'es'}
+                      </span>
+                    </div>
+                    <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Card>
         )}
       </section>
 
-      <section className="fleet-panel fleet-stack">
-        <h2 className="fleet-heading-sm">Add a waitlist</h2>
-        <CreateWaitlistForm />
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold text-foreground">
+          Add a waitlist
+        </h2>
+        <Card className="p-5">
+          <CreateWaitlistForm />
+        </Card>
       </section>
     </div>
-  );
+  )
 }
