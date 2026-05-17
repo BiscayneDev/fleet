@@ -1,396 +1,237 @@
-'use client';
+import Link from 'next/link'
+import { ArrowRight, Sparkles } from 'lucide-react'
 
-import Link from 'next/link';
+import { Button } from '@/components/ui/button'
 
 const steps = [
   {
     number: '01',
     title: 'Capture',
-    description: 'Stumble on a competitor on Twitter? A relevant blog post? Toss the link into Fleet. It gets scraped, enriched by AI, and added to your project context.',
+    description:
+      'Toss a competitor link or a stray observation into Fleet. It scrapes, enriches, and indexes into your project context — without breaking your flow.',
   },
   {
     number: '02',
     title: 'Connect',
-    description: 'Import your LinkedIn and Twitter network. Fleet maps your connections to your GTM — warm intros, co-marketing partners, and potential customers hiding in your existing network.',
+    description:
+      'Import your LinkedIn and Twitter network. Fleet maps your connections to your GTM — warm intros, co-marketing partners, customers hiding in your existing graph.',
   },
   {
     number: '03',
     title: 'Strategize',
-    description: 'Chat with your GTM agent. It knows everything — your research, your network, your goals. It produces real deliverables: positioning, competitive analysis, launch plans.',
+    description:
+      'Chat with your GTM agent. It knows your research, your network, your goals — and ships real deliverables: positioning, competitive analysis, launch plans.',
   },
-];
+]
 
 export default function FleetLanding() {
   return (
-    <div className="fleet-landing">
-      <div aria-hidden="true" className="fleet-grid" />
-      <div aria-hidden="true" className="fleet-glow" />
+    <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
+      {/* Background layers */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.025)_1px,transparent_1px)] [background-size:28px_28px]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed left-1/2 top-[-25%] h-[600px] w-[800px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(124,98,234,0.10)_0%,transparent_60%)]"
+      />
 
       {/* Nav */}
-      <nav className="fleet-nav">
-        <div className="fleet-nav-inner">
-          <Link href="/" className="fleet-logo">
-            Fleet<span className="fleet-logo-tag">GTM</span>
+      <header className="relative z-10 border-b border-border/60">
+        <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
+          <Link
+            href="/"
+            className="flex items-baseline gap-2 text-base font-semibold tracking-tight text-foreground"
+          >
+            <span>Fleet</span>
+            <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-muted-foreground">
+              GTM
+            </span>
           </Link>
-          <Link href="/home" className="fleet-nav-cta">
-            Launch Fleet
-          </Link>
-        </div>
-      </nav>
+          <div className="flex items-center gap-1.5">
+            <Button asChild variant="ghost" size="sm">
+              <a
+                href="https://github.com/BiscayneDev/fleet"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="size-3.5"
+                  aria-hidden="true"
+                >
+                  <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                </svg>
+                GitHub
+              </a>
+            </Button>
+            <Button asChild size="sm">
+              <Link href="/home">
+                Launch Fleet
+                <ArrowRight className="size-3.5" />
+              </Link>
+            </Button>
+          </div>
+        </nav>
+      </header>
 
       {/* Hero */}
-      <section className="fleet-hero">
-        <div className="fleet-hero-inner">
-          <p className="fleet-badge">GTM Intelligence for Founders</p>
-          <h1 className="fleet-title">
-            Your go-to-market<br />
-            <span className="fleet-title-accent">gets smarter every day</span>
-          </h1>
-          <p className="fleet-subtitle">
-            Capture research, connect your network, and let AI build your launch strategy.
-            Fleet turns scattered links and connections into a competitive GTM playbook.
-          </p>
-          <div className="fleet-cta">
-            <Link href="/home" className="fleet-button-primary">
-              Get Started
+      <section className="relative z-10 mx-auto max-w-3xl px-6 pt-24 pb-16 text-center">
+        <div className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.12em] text-primary">
+          <Sparkles className="size-3" />
+          GTM intelligence for founders
+        </div>
+
+        <h1 className="text-balance text-5xl font-semibold leading-[1.05] tracking-tight text-foreground md:text-6xl">
+          Your go-to-market
+          <br />
+          <span className="bg-gradient-to-br from-primary to-[color:oklch(0.72_0.16_295)] bg-clip-text text-transparent">
+            gets smarter every day.
+          </span>
+        </h1>
+
+        <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted-foreground">
+          Capture research, connect your network, and let an LLM build your
+          launch strategy. Fleet turns scattered links and connections into a
+          competitive GTM playbook — local-first, markdown-native, yours.
+        </p>
+
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-2.5">
+          <Button asChild size="lg">
+            <Link href="/home">
+              Open Fleet
+              <ArrowRight className="size-4" />
             </Link>
-            <Link href="/home" className="fleet-button-secondary">
-              See how it works
-            </Link>
-          </div>
+          </Button>
+          <Button asChild size="lg" variant="ghost">
+            <a href="#how-it-works">See how it works</a>
+          </Button>
         </div>
       </section>
 
+      {/* Code preview — Linear-tier "show what content looks like" */}
+      <section className="relative z-10 mx-auto max-w-3xl px-6 pb-24">
+        <div className="overflow-hidden rounded-xl border border-border bg-card/60 shadow-2xl shadow-primary/5">
+          <div className="flex items-center gap-1.5 border-b border-border bg-card/80 px-3 py-2">
+            <span className="size-2.5 rounded-full bg-muted" />
+            <span className="size-2.5 rounded-full bg-muted" />
+            <span className="size-2.5 rounded-full bg-muted" />
+            <span className="ml-2 font-mono text-[11px] text-muted-foreground">
+              inbox/2026-05-16.md
+            </span>
+          </div>
+          <pre className="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed">
+            <code className="text-muted-foreground">
+              <span className="text-foreground">## 09:16 — link</span>
+              {'\n'}
+              URL:{' '}
+              <span className="text-primary">
+                https://x.com/mattepstein/status/...
+              </span>
+              {'\n'}
+              Title: The Viral Launch Formula
+              {'\n\n'}
+              <span className="text-muted-foreground/70">
+                ### Summary
+              </span>
+              {'\n'}
+              21-agent Claude pipeline for &ldquo;Bold Claim&rdquo; positioning.
+              Hi-intensity research, aggressive editing.
+              {'\n\n'}
+              <span className="text-muted-foreground/50">
+                {'<!--- hanz:takes:begin --->'}
+              </span>
+              {'\n'}
+              <span className="text-[color:oklch(0.78_0.16_80)]">
+                High-signal framework for Shipyard launch. Aligns with the
+                &ldquo;Claude as an OS&rdquo; meta-narrative.
+              </span>
+              {'\n'}
+              <span className="text-muted-foreground/50">
+                {'<!--- hanz:takes:end --->'}
+              </span>
+            </code>
+          </pre>
+        </div>
+        <p className="mt-3 text-center text-xs text-muted-foreground">
+          Every capture lands as a markdown block. Your brain stays portable.
+        </p>
+      </section>
+
       {/* How it works */}
-      <section className="fleet-steps">
-        <div className="fleet-steps-inner">
+      <section id="how-it-works" className="relative z-10 px-6 pb-24">
+        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 md:grid-cols-3">
           {steps.map((step) => (
-            <div key={step.number} className="fleet-step">
-              <span className="fleet-step-number">{step.number}</span>
-              <h3 className="fleet-step-title">{step.title}</h3>
-              <p className="fleet-step-desc">{step.description}</p>
-            </div>
+            <article
+              key={step.number}
+              className="group rounded-xl border border-border bg-card/40 p-6 transition-all hover:border-primary/40 hover:bg-card/70"
+            >
+              <span className="font-mono text-[11px] font-medium tracking-[0.12em] text-primary">
+                {step.number} / {steps.length.toString().padStart(2, '0')}
+              </span>
+              <h3 className="mt-2 text-lg font-semibold tracking-tight text-foreground">
+                {step.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {step.description}
+              </p>
+            </article>
           ))}
         </div>
       </section>
 
       {/* Value prop */}
-      <section className="fleet-value">
-        <div className="fleet-value-inner">
-          <h2 className="fleet-value-title">
+      <section className="relative z-10 px-6 pb-24">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-balance text-3xl font-semibold tracking-tight text-foreground">
             Not another AI chatbot.
           </h2>
-          <p className="fleet-value-desc">
-            ChatGPT gives generic advice because it doesn{"'"}t know your project.
-            Fleet has your accumulated research, your network, your competitive landscape —
-            and it gets smarter with every link you capture.
-            The output is grounded in <em>your</em> context, not the internet{"'"}s.
+          <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
+            ChatGPT gives generic advice because it doesn&rsquo;t know your
+            project. Fleet has your research, your network, your competitive
+            landscape — and gets smarter with every link you capture. The
+            output is grounded in{' '}
+            <em className="font-medium not-italic text-primary">
+              your
+            </em>{' '}
+            context, not the internet&rsquo;s.
           </p>
         </div>
       </section>
 
       {/* Bottom CTA */}
-      <section className="fleet-bottom-cta">
-        <div className="fleet-bottom-cta-inner">
-          <h2>Ready to launch?</h2>
-          <p>Your GTM strategy starts with one link.</p>
-          <Link href="/home" className="fleet-button-primary">
-            Get Started Free
-          </Link>
+      <section className="relative z-10 border-t border-border/60 px-6 py-20 text-center">
+        <h2 className="text-balance text-2xl font-semibold tracking-tight text-foreground">
+          Ready to launch?
+        </h2>
+        <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+          Your GTM strategy starts with one link.
+        </p>
+        <div className="mt-6">
+          <Button asChild size="lg">
+            <Link href="/home">
+              Get started — free
+              <ArrowRight className="size-4" />
+            </Link>
+          </Button>
         </div>
       </section>
 
-      <footer className="fleet-footer">
-        <p>Built by <strong>Shipyard</strong></p>
+      {/* Footer */}
+      <footer className="relative z-10 border-t border-border/40 px-6 py-6 text-center text-xs text-muted-foreground">
+        Built by{' '}
+        <a
+          href="https://openshipyard.xyz"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-foreground/80 transition-colors hover:text-foreground"
+        >
+          Shipyard
+        </a>{' '}
+        · Open source · Local-first
       </footer>
-
-      <style>{`
-        .fleet-landing {
-          min-height: 100vh;
-          background: var(--fleet-bg);
-          color: var(--fleet-text);
-          overflow-x: hidden;
-        }
-
-        .fleet-grid {
-          position: fixed;
-          inset: 0;
-          background-image: radial-gradient(circle, rgba(255,255,255,0.02) 1px, transparent 1px);
-          background-size: 32px 32px;
-          pointer-events: none;
-        }
-
-        .fleet-glow {
-          position: fixed;
-          top: -30%;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 800px;
-          height: 600px;
-          background: radial-gradient(ellipse, rgba(56, 189, 248, 0.08) 0%, transparent 70%);
-          pointer-events: none;
-        }
-
-        .fleet-nav {
-          position: relative;
-          z-index: 10;
-          border-bottom: 1px solid rgba(30, 41, 59, 0.5);
-        }
-
-        .fleet-nav-inner {
-          max-width: 1100px;
-          margin: 0 auto;
-          padding: 1rem 2rem;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .fleet-logo {
-          font-size: 1.2rem;
-          font-weight: 800;
-          color: var(--fleet-accent);
-          letter-spacing: -0.02em;
-        }
-
-        .fleet-logo-tag {
-          font-size: 0.55rem;
-          color: var(--fleet-text-muted);
-          margin-left: 0.3rem;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          vertical-align: super;
-        }
-
-        .fleet-nav-cta {
-          font-size: 0.8rem;
-          font-weight: 600;
-          color: var(--fleet-bg);
-          background: var(--fleet-accent);
-          padding: 0.45rem 1rem;
-          border-radius: 0.4rem;
-          transition: opacity 0.15s;
-        }
-
-        .fleet-nav-cta:hover {
-          opacity: 0.85;
-        }
-
-        .fleet-hero {
-          position: relative;
-          z-index: 10;
-          padding: 8rem 2rem 5rem;
-          text-align: center;
-        }
-
-        .fleet-hero-inner {
-          max-width: 720px;
-          margin: 0 auto;
-        }
-
-        .fleet-badge {
-          display: inline-block;
-          font-size: 0.7rem;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: var(--fleet-accent);
-          background: rgba(56, 189, 248, 0.1);
-          border: 1px solid rgba(56, 189, 248, 0.2);
-          border-radius: 2rem;
-          padding: 0.35rem 0.85rem;
-          margin: 0 0 1.5rem;
-        }
-
-        .fleet-title {
-          font-size: 3.2rem;
-          font-weight: 800;
-          margin: 0 0 1.5rem;
-          line-height: 1.1;
-          letter-spacing: -0.03em;
-        }
-
-        .fleet-title-accent {
-          background: linear-gradient(135deg, var(--fleet-accent) 0%, #818cf8 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        .fleet-subtitle {
-          font-size: 1.1rem;
-          color: var(--fleet-text-muted);
-          margin: 0 0 2.5rem;
-          line-height: 1.7;
-          max-width: 560px;
-          margin-left: auto;
-          margin-right: auto;
-        }
-
-        .fleet-cta {
-          display: flex;
-          gap: 0.75rem;
-          justify-content: center;
-        }
-
-        .fleet-button-primary {
-          background: var(--fleet-accent);
-          color: var(--fleet-bg);
-          font-weight: 700;
-          padding: 0.75rem 1.75rem;
-          border-radius: 0.5rem;
-          font-size: 0.9rem;
-          transition: opacity 0.15s, transform 0.15s;
-        }
-
-        .fleet-button-primary:hover {
-          opacity: 0.9;
-          transform: translateY(-1px);
-        }
-
-        .fleet-button-secondary {
-          color: var(--fleet-text-muted);
-          font-weight: 500;
-          padding: 0.75rem 1.5rem;
-          border-radius: 0.5rem;
-          font-size: 0.9rem;
-          border: 1px solid var(--fleet-border);
-          transition: color 0.15s, border-color 0.15s;
-        }
-
-        .fleet-button-secondary:hover {
-          color: var(--fleet-text);
-          border-color: var(--fleet-text-muted);
-        }
-
-        /* Steps */
-        .fleet-steps {
-          position: relative;
-          z-index: 10;
-          padding: 2rem 2rem 6rem;
-        }
-
-        .fleet-steps-inner {
-          max-width: 1000px;
-          margin: 0 auto;
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1.5rem;
-        }
-
-        .fleet-step {
-          background: var(--fleet-panel);
-          border: 1px solid var(--fleet-border);
-          border-radius: 0.75rem;
-          padding: 1.5rem;
-          transition: border-color 0.2s, transform 0.2s;
-        }
-
-        .fleet-step:hover {
-          border-color: rgba(56, 189, 248, 0.3);
-          transform: translateY(-2px);
-        }
-
-        .fleet-step-number {
-          font-size: 0.65rem;
-          font-weight: 700;
-          color: var(--fleet-accent);
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-        }
-
-        .fleet-step-title {
-          font-size: 1.15rem;
-          font-weight: 700;
-          margin: 0.5rem 0;
-        }
-
-        .fleet-step-desc {
-          color: var(--fleet-text-muted);
-          font-size: 0.82rem;
-          margin: 0;
-          line-height: 1.65;
-        }
-
-        /* Value prop */
-        .fleet-value {
-          position: relative;
-          z-index: 10;
-          padding: 4rem 2rem 5rem;
-          text-align: center;
-        }
-
-        .fleet-value-inner {
-          max-width: 640px;
-          margin: 0 auto;
-        }
-
-        .fleet-value-title {
-          font-size: 1.8rem;
-          font-weight: 800;
-          margin: 0 0 1rem;
-          letter-spacing: -0.02em;
-        }
-
-        .fleet-value-desc {
-          color: var(--fleet-text-muted);
-          font-size: 0.95rem;
-          margin: 0;
-          line-height: 1.75;
-        }
-
-        .fleet-value-desc em {
-          color: var(--fleet-accent);
-          font-style: normal;
-          font-weight: 600;
-        }
-
-        .fleet-bottom-cta {
-          position: relative;
-          z-index: 10;
-          padding: 3rem 2rem 5rem;
-          text-align: center;
-        }
-
-        .fleet-bottom-cta-inner {
-          max-width: 500px;
-          margin: 0 auto;
-        }
-
-        .fleet-bottom-cta h2 {
-          font-size: 1.6rem;
-          font-weight: 700;
-          margin: 0 0 0.35rem;
-        }
-
-        .fleet-bottom-cta p {
-          color: var(--fleet-text-muted);
-          margin: 0 0 1.5rem;
-          font-size: 0.9rem;
-        }
-
-        .fleet-footer {
-          position: relative;
-          z-index: 10;
-          border-top: 1px solid var(--fleet-border);
-          padding: 1.5rem 2rem;
-          text-align: center;
-          color: var(--fleet-text-muted);
-          font-size: 0.78rem;
-        }
-
-        .fleet-footer p { margin: 0; }
-        .fleet-footer strong { color: var(--fleet-text); font-weight: 600; }
-
-        @media (max-width: 768px) {
-          .fleet-title { font-size: 2.2rem; }
-          .fleet-subtitle { font-size: 0.95rem; }
-          .fleet-hero { padding: 5rem 1.5rem 3rem; }
-          .fleet-steps-inner { grid-template-columns: 1fr; }
-          .fleet-cta { flex-direction: column; align-items: center; }
-        }
-      `}</style>
     </div>
-  );
+  )
 }
