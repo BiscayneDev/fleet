@@ -1,24 +1,25 @@
-'use client';
+'use client'
 
-export function FleetHeader({ onSearchOpen }: { onSearchOpen?: () => void }) {
+import { Search } from 'lucide-react'
+
+export function FleetHeader({
+  onSearchOpen,
+}: {
+  onSearchOpen?: () => void
+}) {
   return (
-    <header className="fleet-header">
-      <div className="fleet-header-group">
-        <button
-          className="fleet-command"
-          onClick={onSearchOpen}
-          type="button"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <span className="fleet-command-text">Search Fleet...</span>
-          <kbd className="fleet-command-kbd">
-            <span>&#8984;</span>K
-          </kbd>
-        </button>
-      </div>
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-end gap-3 border-b border-border bg-background/80 px-6 backdrop-blur-md">
+      <button
+        type="button"
+        onClick={onSearchOpen}
+        className="group flex h-8 w-72 items-center gap-2 rounded-md border border-border bg-card/40 px-3 text-sm text-muted-foreground transition-colors hover:border-border hover:bg-card/70"
+      >
+        <Search className="size-3.5 opacity-60" />
+        <span className="flex-1 text-left">Search Fleet…</span>
+        <kbd className="flex items-center gap-0.5 rounded border border-border bg-background/60 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+          <span>⌘</span>K
+        </kbd>
+      </button>
     </header>
-  );
+  )
 }

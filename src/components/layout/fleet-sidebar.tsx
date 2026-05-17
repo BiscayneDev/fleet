@@ -1,110 +1,92 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useCallback } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
+import {
+  Home,
+  FolderOpen,
+  Inbox,
+  Users,
+  BookOpen,
+  Activity,
+  ChevronRight,
+  Plus,
+  FileText,
+  Menu,
+  X,
+  type LucideIcon,
+} from 'lucide-react'
 
-import { fleetNavItems } from '@/lib/fleet/nav';
+import { cn } from '@/lib/utils'
+import { fleetNavItems, type FleetNavItem } from '@/lib/fleet/nav'
 
-const NAV_ICONS: Record<string, React.ReactNode> = {
-  home: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-      <polyline points="9 22 9 12 15 12 15 22" />
-    </svg>
-  ),
-  projects: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-    </svg>
-  ),
-  inbox: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
-      <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
-    </svg>
-  ),
-  network: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
-  ),
-  wiki: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-    </svg>
-  ),
-  waitlists: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-    </svg>
-  ),
-};
+const NAV_ICONS: Record<FleetNavItem['key'], LucideIcon> = {
+  home: Home,
+  projects: FolderOpen,
+  inbox: Inbox,
+  network: Users,
+  wiki: BookOpen,
+  waitlists: Activity,
+}
 
 interface KBPage {
-  slug: string;
-  title: string;
-  type: string;
+  slug: string
+  title: string
+  type: string
 }
 
 function useProjectSlug(pathname: string | null): string | null {
-  if (!pathname) return null;
-  const match = pathname.match(/^\/projects\/([^/]+)/);
-  return match ? match[1] : null;
+  if (!pathname) return null
+  const match = pathname.match(/^\/projects\/([^/]+)/)
+  return match ? match[1] : null
 }
 
 export function FleetSidebar() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const projectSlug = useProjectSlug(pathname);
-  const [kbPages, setKbPages] = useState<KBPage[]>([]);
-  const [kbExpanded, setKbExpanded] = useState(true);
-  const [creating, setCreating] = useState(false);
-  const [newPageTitle, setNewPageTitle] = useState('');
+  const pathname = usePathname()
+  const router = useRouter()
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const projectSlug = useProjectSlug(pathname)
+  const [kbPages, setKbPages] = useState<KBPage[]>([])
+  const [kbExpanded, setKbExpanded] = useState(true)
+  const [creating, setCreating] = useState(false)
+  const [newPageTitle, setNewPageTitle] = useState('')
 
   const loadKBPages = useCallback(async (slug: string) => {
     try {
-      const res = await fetch(`/api/wiki/${slug}/list`);
+      const res = await fetch(`/api/wiki/${slug}/list`)
       if (res.ok) {
-        const data = await res.json();
-        setKbPages(data.pages ?? []);
+        const data = (await res.json()) as { pages?: KBPage[] }
+        setKbPages(data.pages ?? [])
       }
     } catch {
-      setKbPages([]);
+      setKbPages([])
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     if (projectSlug) {
-      loadKBPages(projectSlug);
+      void loadKBPages(projectSlug)
     } else {
-      setKbPages([]);
+      setKbPages([])
     }
-  }, [projectSlug, loadKBPages]);
+  }, [projectSlug, loadKBPages])
 
   async function handleCreatePage() {
-    if (!newPageTitle.trim() || !projectSlug) return;
-
-    const title = newPageTitle.trim();
+    if (!newPageTitle.trim() || !projectSlug) return
+    const title = newPageTitle.trim()
     const slug = title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+      .replace(/^-+|-+$/g, '')
 
     try {
       const res = await fetch(`/api/wiki/${projectSlug}/${slug}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ body: `# ${title}\n\n` }),
-      });
-
+      })
       if (!res.ok) {
-        // Page doesn't exist yet — create it via the ingest endpoint
         await fetch('/api/ingest/link', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -114,142 +96,177 @@ export function FleetSidebar() {
             title,
             body: `# ${title}\n\n`,
           }),
-        });
+        })
       }
-
-      setNewPageTitle('');
-      setCreating(false);
-      await loadKBPages(projectSlug);
-      router.push(`/projects/${projectSlug}/wiki/${slug}`);
+      setNewPageTitle('')
+      setCreating(false)
+      await loadKBPages(projectSlug)
+      router.push(`/projects/${projectSlug}/wiki/${slug}`)
     } catch {
-      // Silently handle errors
-    }
-  }
-
-  function handleNewPageKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleCreatePage();
-    } else if (e.key === 'Escape') {
-      setCreating(false);
-      setNewPageTitle('');
+      // silent
     }
   }
 
   return (
     <>
       <button
-        className="fleet-mobile-toggle"
-        onClick={() => setMobileOpen(true)}
-        aria-label="Open navigation"
         type="button"
+        aria-label="Open navigation"
+        onClick={() => setMobileOpen(true)}
+        className="fixed left-3 top-3 z-50 flex size-9 items-center justify-center rounded-md border border-border bg-card text-foreground shadow-sm md:hidden"
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="3" y1="12" x2="21" y2="12" />
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <line x1="3" y1="18" x2="21" y2="18" />
-        </svg>
+        <Menu className="size-4" />
       </button>
 
       {mobileOpen && (
-        <div className="fleet-sidebar-backdrop" onClick={() => setMobileOpen(false)} />
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
       )}
 
-      <aside className={`fleet-sidebar ${mobileOpen ? 'open' : ''}`}>
-        <div className="fleet-logo">
-          <Link href="/home" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <span className="fleet-logo-mark">Fleet</span>
-            <span className="fleet-logo-tag">GTM</span>
+      <aside
+        className={cn(
+          'fixed inset-y-0 left-0 z-40 flex w-60 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-transform duration-200',
+          mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
+        )}
+      >
+        <div className="flex h-14 items-center justify-between border-b border-sidebar-border px-4">
+          <Link
+            href="/home"
+            className="flex items-baseline gap-2"
+            onClick={() => setMobileOpen(false)}
+          >
+            <span className="text-base font-semibold tracking-tight text-foreground">
+              Fleet
+            </span>
+            <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-muted-foreground">
+              GTM
+            </span>
           </Link>
+          <button
+            type="button"
+            aria-label="Close navigation"
+            onClick={() => setMobileOpen(false)}
+            className="text-muted-foreground transition-colors hover:text-foreground md:hidden"
+          >
+            <X className="size-4" />
+          </button>
         </div>
 
-        <nav aria-label="Fleet navigation">
-          <ul className="fleet-nav-list">
+        <nav
+          aria-label="Fleet navigation"
+          className="flex-1 overflow-y-auto px-2 py-3"
+        >
+          <ul className="space-y-0.5">
             {fleetNavItems.map((item) => {
-              const active = pathname === item.href || pathname?.startsWith(`${item.href}/`);
+              const Icon = NAV_ICONS[item.key]
+              const active =
+                pathname === item.href ||
+                pathname?.startsWith(`${item.href}/`)
               return (
                 <li key={item.key}>
                   <Link
-                    aria-current={active ? 'page' : undefined}
-                    className="fleet-nav-link"
                     href={item.href}
+                    aria-current={active ? 'page' : undefined}
                     onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      'flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm transition-colors',
+                      active
+                        ? 'bg-sidebar-accent text-foreground'
+                        : 'text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground',
+                    )}
                   >
-                    <span className="fleet-nav-icon">{NAV_ICONS[item.key]}</span>
+                    <Icon className="size-3.5 shrink-0" />
                     <span>{item.label}</span>
                   </Link>
                 </li>
-              );
+              )
             })}
           </ul>
-        </nav>
 
-        {/* Knowledge Base tree — Cabinet-style */}
-        {projectSlug && (
-          <div className="sidebar-kb">
-            <button
-              type="button"
-              className="sidebar-kb-toggle"
-              onClick={() => setKbExpanded(!kbExpanded)}
-            >
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: kbExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-              <span>Knowledge Base</span>
-            </button>
+          {projectSlug && (
+            <div className="mt-6 px-1">
+              <button
+                type="button"
+                onClick={() => setKbExpanded(!kbExpanded)}
+                className="flex w-full items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <ChevronRight
+                  className={cn(
+                    'size-3 transition-transform',
+                    kbExpanded && 'rotate-90',
+                  )}
+                />
+                Knowledge Base
+              </button>
 
-            {kbExpanded && (
-              <div className="sidebar-kb-tree">
-                {kbPages.map((page) => {
-                  const pageHref = `/projects/${projectSlug}/wiki/${page.slug}`;
-                  const isActive = pathname === pageHref;
-                  return (
-                    <Link
-                      key={page.slug}
-                      href={pageHref}
-                      className={`sidebar-kb-item ${isActive ? 'active' : ''}`}
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.5 }}>
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                        <polyline points="14 2 14 8 20 8" />
-                      </svg>
-                      <span>{page.title}</span>
-                    </Link>
-                  );
-                })}
+              {kbExpanded && (
+                <div className="mt-2 space-y-0.5">
+                  {kbPages.map((page) => {
+                    const href = `/projects/${projectSlug}/wiki/${page.slug}`
+                    const isActive = pathname === href
+                    return (
+                      <Link
+                        key={page.slug}
+                        href={href}
+                        onClick={() => setMobileOpen(false)}
+                        className={cn(
+                          'flex items-center gap-2 rounded-md px-2 py-1 text-xs transition-colors',
+                          isActive
+                            ? 'bg-sidebar-accent text-foreground'
+                            : 'text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground',
+                        )}
+                      >
+                        <FileText className="size-3 shrink-0 opacity-50" />
+                        <span className="truncate">{page.title}</span>
+                      </Link>
+                    )
+                  })}
 
-                {/* + New Page */}
-                {creating ? (
-                  <div className="sidebar-kb-new">
+                  {creating ? (
                     <input
-                      className="sidebar-kb-new-input"
+                      className="w-full rounded-md border border-input bg-background px-2 py-1 text-xs text-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
                       value={newPageTitle}
                       onChange={(e) => setNewPageTitle(e.target.value)}
-                      onKeyDown={handleNewPageKeyDown}
-                      onBlur={() => { if (!newPageTitle.trim()) { setCreating(false); } }}
-                      placeholder="Page title..."
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault()
+                          void handleCreatePage()
+                        } else if (e.key === 'Escape') {
+                          setCreating(false)
+                          setNewPageTitle('')
+                        }
+                      }}
+                      onBlur={() => {
+                        if (!newPageTitle.trim()) setCreating(false)
+                      }}
+                      placeholder="Page title…"
                       autoFocus
                     />
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    className="sidebar-kb-add"
-                    onClick={() => setCreating(true)}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="12" y1="5" x2="12" y2="19" />
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                    </svg>
-                    <span>New Page</span>
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setCreating(true)}
+                      className="flex w-full items-center gap-2 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-sidebar-accent/60 hover:text-foreground"
+                    >
+                      <Plus className="size-3" />
+                      New Page
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </nav>
+
+        <div className="border-t border-sidebar-border px-4 py-3">
+          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+            Local · Markdown · Yours
+          </p>
+        </div>
       </aside>
     </>
-  );
+  )
 }
