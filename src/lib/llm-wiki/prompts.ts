@@ -24,6 +24,19 @@ export interface ParseError {
 
 export type ParseResult = ParsedResponse | ParseError;
 
+export const ENRICHMENT_SYSTEM_PROMPT = `You are a GTM intelligence analyst. Given a company/product page, produce a concise executive briefing.
+
+Return ONLY valid JSON:
+{
+  "summary": "2-3 sentences: what is this, who is it for, why does it matter right now",
+  "concepts": ["key technology or business concepts this company uses"],
+  "competitors": ["direct competitors — real companies, not generic categories"],
+  "risks": ["real competitive or market risks — be specific, not generic"],
+  "suggestedActions": ["1-2 concrete next steps for someone evaluating this space"]
+}
+
+Be specific and opinionated. Name real competitors. Flag real risks. No filler.`;
+
 export function buildEnrichmentPrompt(input: EnrichmentInput): string {
   const truncatedText = input.text.slice(0, 8000);
 
@@ -37,6 +50,53 @@ ${truncatedText}
 --- END CONTENT ---`;
 }
 
+/**
+ * Extract the first balanced JSON object/array from raw text, ignoring any
+ * prose or trailing chatter around it. Returns null if none parses.
+ */
+function extractFirstJson(cleaned: string): unknown | null {
+  // Fast path: the whole string is JSON.
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    /* fall through */
+  }
+  const start = cleaned.indexOf('{') >= 0 ? cleaned.indexOf('{') : cleaned.indexOf('[');
+  if (start < 0) return null;
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let i = start; i < cleaned.length; i++) {
+    const ch = cleaned[i];
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+    if (ch === '\\') {
+      if (inString) escaped = true;
+      continue;
+    }
+    if (ch === '"') {
+      inString = !inString;
+      continue;
+    }
+    if (inString) continue;
+    if (ch === '{' || ch === '[') depth++;
+    else if (ch === '}' || ch === ']') {
+      depth--;
+      if (depth === 0) {
+        const candidate = cleaned.slice(start, i + 1);
+        try {
+          return JSON.parse(candidate);
+        } catch {
+          return null;
+        }
+      }
+    }
+  }
+  return null;
+}
+
 export function parseEnrichmentResponse(raw: string): ParseResult {
   try {
     // Strip markdown code fences if present
@@ -45,7 +105,11 @@ export function parseEnrichmentResponse(raw: string): ParseResult {
       .replace(/\s*```\s*$/i, '')
       .trim();
 
-    const parsed = JSON.parse(cleaned);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- JSON shape is model-dependent
+    const parsed = extractFirstJson(cleaned) as Record<string, any> | null;
+    if (parsed === null || typeof parsed !== 'object') {
+      return { ok: false, error: 'No JSON object found in response' };
+    }
 
     // Handle multiple possible response formats
     let summary = '';

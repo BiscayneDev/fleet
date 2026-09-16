@@ -49,7 +49,7 @@ export async function generateResearchQueries(
   const { provider, model } = resolveProvider();
 
   const result = await generateText({
-    model: provider.languageModel(model),
+    model: provider.chat(model),
     system: 'You are a GTM research strategist. Return ONLY a valid JSON array of strings. No explanation, no markdown fences.',
     prompt: `Given this project context, generate exactly 6 web search queries that would validate the go-to-market strategy. Focus on:
 1. Competitor intelligence (what are competitors doing, pricing, features)

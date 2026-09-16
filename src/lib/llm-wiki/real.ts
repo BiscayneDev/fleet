@@ -5,6 +5,7 @@ import { scrapeUrl } from './scraper';
 import {
   buildEnrichmentPrompt,
   parseEnrichmentResponse,
+  ENRICHMENT_SYSTEM_PROMPT,
   type EnrichmentInput,
 } from './prompts';
 import type {
@@ -42,12 +43,11 @@ export async function enrichContent(input: EnrichmentInput): Promise<LlmWikiPage
   console.log('[llm-wiki] Calling LLM with model:', model, 'base URL:', process.env.LLM_WIKI_BASE_URL);
   try {
     const result = await generateText({
-      model: provider.languageModel(model),
-      system:
-        'You are a research analyst. Return ONLY valid JSON. No markdown fences, no explanation.',
+      model: provider.chat(model),
+      system: ENRICHMENT_SYSTEM_PROMPT,
       prompt,
       temperature: 0.3,
-      maxOutputTokens: 1024,
+      maxOutputTokens: 2048,
     });
     text = result.text;
     console.log('[llm-wiki] Raw LLM response length:', text.length, 'preview:', text.slice(0, 200));

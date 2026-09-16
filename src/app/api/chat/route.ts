@@ -49,7 +49,7 @@ export async function POST(request: Request) {
   const modelMessages = await convertToModelMessages(messages);
 
   const result = streamText({
-    model: provider.languageModel(model),
+    model: provider.chat(model),
     system: systemPrompt,
     messages: modelMessages,
     temperature: 0.7,

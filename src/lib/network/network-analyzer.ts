@@ -153,7 +153,7 @@ Analyze these connections and produce a structured GTM network analysis:
 Be specific and actionable. Reference actual connection names and companies. Do NOT be generic.`;
 
   const result = await generateText({
-    model: provider.languageModel(model),
+    model: provider.chat(model),
     prompt,
     temperature: 0.5,
     maxOutputTokens: 4096,

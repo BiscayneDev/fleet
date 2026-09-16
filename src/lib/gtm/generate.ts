@@ -183,7 +183,7 @@ export async function generateGtmStep(
   const { provider, model } = resolveProvider();
 
   const result = await generateText({
-    model: provider.languageModel(model),
+    model: provider.chat(model),
     system: `You are Fleet, a world-class GTM strategist. You are building Step ${step.number} of 7 in a complete go-to-market strategy.
 
 Your output must be specific, actionable, and grounded in the project's actual research and network data. Never be generic. If the project lacks context for a section, say so and explain what data would improve it.

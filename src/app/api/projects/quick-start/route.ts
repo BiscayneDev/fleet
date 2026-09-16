@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
         const { provider, model } = resolveProvider();
         const parseResult = await generateText({
-          model: provider.languageModel(model),
+          model: provider.chat(model),
           system: 'Return ONLY valid JSON. No markdown, no explanation.',
           prompt: `Given this startup idea, generate a project name and 3 goals. Return JSON:
 {"title": "Short Product Name (2-4 words)", "summary": "${idea.trim()}", "goals": ["goal 1", "goal 2", "goal 3"]}

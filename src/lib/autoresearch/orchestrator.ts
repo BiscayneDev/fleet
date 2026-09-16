@@ -92,7 +92,7 @@ async function synthesizeReport(
     .join('\n\n');
 
   const result = await generateText({
-    model: provider.languageModel(model),
+    model: provider.chat(model),
     system: 'You are a GTM strategist synthesizing web research into actionable intelligence.',
     prompt: `Synthesize these research findings into a GTM Validation Report for "${projectTitle}".
 

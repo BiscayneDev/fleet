@@ -126,7 +126,7 @@ export async function POST(request: Request) {
 
     // Stream the analysis
     const result = streamText({
-      model: provider.languageModel(model),
+      model: provider.chat(model),
       prompt: systemPrompt,
       temperature: 0.6,
       maxOutputTokens: 4096,
