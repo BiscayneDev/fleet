@@ -22,6 +22,7 @@
     "@ai-sdk/openai": "^3.0.53",
     "@ai-sdk/react": "^3.0.170",
     "@mozilla/readability": "^0.6.0",
+    "@octokit/rest": "^22.0.1",
     "@tailwindcss/postcss": "^4.3.0",
     "@tiptap/extension-link": "^3.22.4",
     "@tiptap/extension-placeholder": "^3.22.4",
