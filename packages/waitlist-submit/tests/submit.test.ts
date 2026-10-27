@@ -4,9 +4,9 @@ import matter from 'gray-matter';
 const createOrUpdateFileContents = vi.fn();
 
 vi.mock('@octokit/rest', () => ({
-  Octokit: vi.fn().mockImplementation(() => ({
-    repos: { createOrUpdateFileContents },
-  })),
+  Octokit: vi.fn().mockImplementation(function () {
+    return { repos: { createOrUpdateFileContents } };
+  }),
 }));
 
 // Import after mock is registered

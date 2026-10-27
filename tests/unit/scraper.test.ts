@@ -8,21 +8,25 @@ vi.mock('jsdom', () => {
     querySelectorAll: vi.fn(() => []),
   };
   return {
-    JSDOM: vi.fn().mockImplementation(() => ({
-      window: {
-        document: mockDocument,
-      },
-    })),
+    JSDOM: vi.fn().mockImplementation(function () {
+      return {
+        window: {
+          document: mockDocument,
+        },
+      };
+    }),
   };
 });
 
 vi.mock('@mozilla/readability', () => ({
-  Readability: vi.fn().mockImplementation(() => ({
-    parse: vi.fn().mockReturnValue({
-      title: 'Example Domain',
-      textContent: 'This domain is for use in illustrative examples.',
-    }),
-  })),
+  Readability: vi.fn().mockImplementation(function () {
+    return {
+      parse: vi.fn().mockReturnValue({
+        title: 'Example Domain',
+        textContent: 'This domain is for use in illustrative examples.',
+      }),
+    };
+  }),
 }));
 
 describe('scrapeUrl', () => {
