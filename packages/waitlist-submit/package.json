@@ -45,11 +45,11 @@
   "dependencies": {
     "@octokit/rest": "^22.0.1",
     "gray-matter": "^4.0.3",
-    "zod": "^4.3.6"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^20",
     "typescript": "^5",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.12"
   }
 }
